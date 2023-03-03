@@ -7,6 +7,8 @@
                     <div class="login_part_form_iner">
                         <h3>Bienvenido! <br> Por favor ingresa tus datos</h3>
                         <form id="register_form" class="row contact_form" novalidate="novalidate">
+                            <input type="hidden" name="<?= $data['tk']['name'] ?>" value="<?= $data['tk']['key'][$data['tk']['name']]  ?>">
+                            <input type="hidden" name="<?= $data['tk']['value'] ?>" value="<?= $data['tk']['key'][$data['tk']['value']] ?>">
                             <div class="form-group col-md-12 ft-b text-left">
                                 <label for="dni">DNI:</label>
                                 <input type="number" class="form-control" id="dni" name="dni" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Ingrese su dni'" placeholder='Ingrese su dni' required min="1" pattern="^[0-9]+">

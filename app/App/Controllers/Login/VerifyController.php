@@ -103,18 +103,4 @@ class verifyController extends Controller
         $msg = "Se ha enviado un nuevo enlace de verificación a la dirección de correo electrónico que proporcionó durante el registro";
         return $this->respondWithJson($response, ["status" => true, "message" => $msg, "tk" => $rq['usu_token']]);
     }
-
-    private function respondWithError($response, $message)
-    {
-        return $this->respondWithJson($response, ["status" => false, "message" => $message]);
-    }
-
-    private function respondWithJson($response, $data)
-    {
-        $payload = json_encode($data);
-        $response->getBody()->write($payload);
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
-    }
 }

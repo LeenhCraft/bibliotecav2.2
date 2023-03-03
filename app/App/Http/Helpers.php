@@ -318,10 +318,3 @@ function verifySignature($token, $timestamp, $signature)
     return hash_equals($signature, $expected_signature);
 }
 
-function sanitizar($data)
-{
-    foreach ($data as $key => $value) {
-        $data[$key] = strClean($value);
-    }
-    return $data;
-}

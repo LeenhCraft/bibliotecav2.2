@@ -17,6 +17,8 @@
                     <div class="login_part_form_iner">
                         <h3>Bienvenido Nuevamente!<br>Inicie sesión ahora</h3>
                         <form id="form_login" class="row contact_form" novalidate="novalidate">
+                            <input type="hidden" name="<?= $data['tk']['name'] ?>" value="<?= $data['tk']['key'][$data['tk']['name']]  ?>">
+                            <input type="hidden" name="<?= $data['tk']['value'] ?>" value="<?= $data['tk']['key'][$data['tk']['value']] ?>">
                             <div class="col-md-12 form-group p_star">
                                 <input type="text" class="form-control" id="email" name="email" placeholder="Usuario">
                             </div>
@@ -31,7 +33,7 @@
                                 <button type="submit" value="submit" class="btn_3">
                                     log in
                                 </button>
-                                <a class="lost_pass" href="#">No recuerdo mi contraseña?</a>
+                                <a class="lost_pass" href="/forgot-password">No recuerdo mi contraseña?</a>
                             </div>
                         </form>
                     </div>

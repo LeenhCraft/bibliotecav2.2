@@ -31,7 +31,6 @@
 </section>
 
 <?php
-dep(isset($_SESSION['lnh']));
 dep($_SESSION);
 ?>
 

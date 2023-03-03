@@ -1,4 +1,3 @@
-let divLoading = $("#divLoading");
 $(document).ready(function () {
   $("#email").focus();
   $("#form_login").validate({

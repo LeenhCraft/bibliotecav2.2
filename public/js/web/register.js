@@ -1,4 +1,3 @@
-let divLoading = $("#divLoading");
 $(document).ready(function () {
   $("#dni").focus();
   $("#register_form").validate({
@@ -49,35 +48,35 @@ $(document).ready(function () {
       },
     },
     submitHandler: function (form) {
-      let data = $("#register_form").serialize();
-      let ajaxUrl = base_url + "register";
-      divLoading.css("display", "flex");
-      $.post(ajaxUrl, data, function (data) {
-        console.log(data);
-        divLoading.css("display", "none");
-        if (data.status) {
-          let tk = data.data.token ?? "#";
-          $(".login_part_form_iner").html(
-            `<h1 class="text-center text-md-left">Gracias por registrarte!<br><b>` +
-              data.data.name +
-              `</b></h1>
-          <p>Antes de comenzar, ¿podría verificar su dirección de correo electrónico haciendo clic en el enlace que le acabamos de enviar? Si no recibiste el correo electrónico, con gusto te enviaremos otro.</p>
-          <form id="resend_notification" method="post" onsubmit="resend_notification(this,event)" class="mt-3">
-          <input type="hidden" name="_token" value="` +
-              tk +
-              `">
-          <button type="submit" value="submit" class="btn_3">Resend Verification Email</button>
-          </form>`
-          );
-        } else {
-          Swal.fire({
-            title: "Error",
-            text: data.message,
-            icon: "error",
-            confirmButtonText: "ok",
-          });
-        }
-      });
+        let data = $("#register_form").serialize();
+        let ajaxUrl = base_url + "register";
+        divLoading.css("display", "flex");
+        $.post(ajaxUrl, data, function (data) {
+          console.log(data);
+          divLoading.css("display", "none");
+          if (data.status) {
+            let tk = data.data.token ?? "#";
+            $(".login_part_form_iner").html(
+              `<h1 class="text-center text-md-left">Gracias por registrarte!<br><b>` +
+                data.data.name +
+                `</b></h1>
+            <p>Antes de comenzar, ¿podría verificar su dirección de correo electrónico haciendo clic en el enlace que le acabamos de enviar? Si no recibiste el correo electrónico, con gusto te enviaremos otro.</p>
+            <form id="resend_notification" method="post" onsubmit="resend_notification(this,event)" class="mt-3">
+            <input type="hidden" name="_token" value="` +
+                tk +
+                `">
+            <button type="submit" value="submit" class="btn_3">Resend Verification Email</button>
+            </form>`
+            );
+          } else {
+            Swal.fire({
+              title: "Error",
+              text: data.message,
+              icon: "error",
+              confirmButtonText: "ok",
+            });
+          }
+        });
     },
   });
 });

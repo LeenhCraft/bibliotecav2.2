@@ -4,16 +4,39 @@ namespace App\Controllers\Login;
 
 use App\Controllers\Controller;
 use App\Models\UsuarioModel;
+use Slim\Csrf\Guard;
+use Slim\Psr7\Factory\ResponseFactory;
 
 class RegisterController extends Controller
 {
+    protected $responseFactory;
+
+    protected $guard;
+
+    public function __construct()
+    {
+        session_start();
+        $this->responseFactory = new ResponseFactory();
+        $this->guard = new Guard($this->responseFactory);
+        $this->guard->setStorageLimit(1);
+    }
     public function index($request, $response, $args)
     {
-        $return = $this->view("Web.register", [
+        // Generate new tokens
+        $csrfNameKey = $this->guard->getTokenNameKey();
+        $csrfValueKey = $this->guard->getTokenValueKey();
+        $keyPair = $this->guard->generateToken();
+
+        $return = $this->view("Web.Login.register", [
             "data" => [
                 'title' => 'Register',
             ],
-            "js" => ["js/web/register.js", "js/web/resend_email.js"]
+            "js" => ["js/web/register.js", "js/web/resend_email.js"],
+            "tk" => [
+                "name" => $csrfNameKey,
+                "value" => $csrfValueKey,
+                "key" => $keyPair
+            ],
         ]);
         $response->getBody()->write($return);
         return $response;
@@ -23,19 +46,17 @@ class RegisterController extends Controller
     {
         $data = $this->sanitizar($request->getParsedBody()); // obtenemos los datos del formulario y sanitizamos los datos
 
+        $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
+
+        if (!$validate) {
+            $msg = "Error de validación, por favor recargue la página";
+            return $this->respondWithError($response, $msg);
+        }
+
         $errors = $this->validar($data); // validamos los datos
         if (!$errors) { // si hay errores
-            $rq = json_encode([
-                "status" => false,
-                "message" => "Verifique los datos ingresados",
-                "errors" => $errors,
-            ]);
-
-            $response->getBody()->write($rq);
-
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus(200);
+            $msg = "Verifique los datos ingresados";
+            return $this->respondWithError($response, $msg);
         }
 
         $token = token(7); // generamos un token
@@ -46,16 +67,8 @@ class RegisterController extends Controller
 
         $exist = $usuarioModel->where("usu_usuario", "LIKE", $data["email"])->first(); // verificamos si el email ya se encuentra registrado
         if ($exist) {
-            $rq = json_encode([
-                "status" => false,
-                "message" => "El email ya se encuentra registrado",
-            ]);
-
-            $response->getBody()->write($rq);
-
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus(200);
+            $msg = "El email ya se encuentra registrado";
+            return $this->respondWithError($response, $msg);
         }
 
         $rq = $usuarioModel->save($data); // guardamos los datos
@@ -68,7 +81,6 @@ class RegisterController extends Controller
                 "token" => $rq['usu_token'],
                 "expires" => $rq['usu_expire'],
             ]);
-
             $rq = [
                 "status" => true,
                 "message" => "Datos guardados correctamente",
@@ -84,14 +96,7 @@ class RegisterController extends Controller
             ];
         }
 
-
-        $rq = json_encode($rq);
-
-        $response->getBody()->write($rq);
-
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
+        return $this->respondWithJson($response, $rq);
     }
 
     private function validar($data)
@@ -122,14 +127,6 @@ class RegisterController extends Controller
             return false;
         }
         return true;
-    }
-
-    public function sanitizar($data)
-    {
-        foreach ($data as $key => $value) {
-            $data[$key] = strClean($value);
-        }
-        return $data;
     }
 
     public function sendEmail($data = [])

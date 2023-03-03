@@ -22,7 +22,7 @@ class WebController extends Controller
     private function items_banner()
     {
         $webmodel = new WebModel();
-        $response = $webmodel->where('art_estado', 1)->orderBy("idarticulo","DESC")->limit(4)->get();
+        $response = $webmodel->where('art_estado', 1)->orderBy("idarticulo", "DESC")->limit(4)->get();
         $html = '';
         foreach ($response as $row) {
             $html .= '

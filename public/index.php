@@ -8,7 +8,6 @@ require_once '../app/config/env.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../app');
 $dotenv->load();
-
 $app = AppFactory::create();
 
 require_once __DIR__ . '/../app/config/error.php';

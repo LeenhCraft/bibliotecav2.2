@@ -2,19 +2,41 @@
 
 namespace App\Controllers\Login;
 
+use Slim\Csrf\Guard;
+use Slim\Psr7\Factory\ResponseFactory;
+
 use App\Controllers\Controller;
 use App\Models\UsuarioModel;
 
 class LoginController extends Controller
 {
+    protected $responseFactory;
+
+    protected $guard;
+
+    public function __construct()
+    {
+        session_start();
+        $this->responseFactory = new ResponseFactory();
+        $this->guard = new Guard($this->responseFactory);
+    }
+
     public function index($request, $response, $args)
     {
-        $return = $this->view("Web.login", [
+        $csrfNameKey = $this->guard->getTokenNameKey();
+        $csrfValueKey = $this->guard->getTokenValueKey();
+        $keyPair = $this->guard->generateToken();
+        $return = $this->view("Web.Login.login", [
             "data" => [
                 'title' => 'Login',
             ],
             "js" => [
                 "js/web/login.js"
+            ],
+            "tk" => [
+                "name" => $csrfNameKey,
+                "value" => $csrfValueKey,
+                "key" => $keyPair
             ],
         ]);
         $response->getBody()->write($return);
@@ -23,8 +45,15 @@ class LoginController extends Controller
 
     public function login($request, $response, $args)
     {
+        $data = $this->sanitizar($request->getParsedBody());
 
-        $data = sanitizar($request->getParsedBody());
+        $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
+
+        if (!$validate) {
+            $msg = "Error de validación, por favor recargue la página";
+            return $this->respondWithError($response, $msg);
+        }
+
         $usuarioModel = new UsuarioModel();
         $usuario = $usuarioModel->where("usu_usuario", "LIKE", $data["email"])->first();
 
@@ -46,23 +75,10 @@ class LoginController extends Controller
             $_SESSION['lnh'] = $usuario['idwebusuario'];
             $_SESSION['pe'] = true;
             $msg = "Bienvenido! " . $usuario["usu_nombre"];
+            $this->guard->removeAllTokenFromStorage();
             return $this->respondWithJson($response, ["status" => true, "message" => $msg]);
         }
         $msg = "Erorr inesperado";
         return $this->respondWithError($response, $msg);
-    }
-
-    private function respondWithError($response, $message)
-    {
-        return $this->respondWithJson($response, ["status" => false, "message" => $message]);
-    }
-
-    private function respondWithJson($response, $data)
-    {
-        $payload = json_encode($data);
-        $response->getBody()->write($payload);
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
     }
 }

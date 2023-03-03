@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Error;
 
+use App\Controllers\Controller;
 use Slim\Psr7\Response;
 
 class ErrorController extends Controller

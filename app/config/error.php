@@ -1,6 +1,6 @@
 <?php
 
-use App\Controllers\ErrorController;
+use App\Controllers\Error\ErrorController;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpMethodNotAllowedException;

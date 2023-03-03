@@ -36,4 +36,31 @@ class Controller
     {
         return "leenh";
     }
+
+    public function respondWithError($response, $message)
+    {
+        return $this->respondWithJson($response, ["status" => false, "message" => $message]);
+    }
+
+    public function respondWithSuccess($response, $message)
+    {
+        return $this->respondWithJson($response, ["status" => true, "message" => $message]);
+    }
+
+    public function respondWithJson($response, $data)
+    {
+        $payload = json_encode($data);
+        $response->getBody()->write($payload);
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(200);
+    }
+
+    public function sanitizar($data)
+    {
+        foreach ($data as $key => $value) {
+            $data[$key] = strClean($value);
+        }
+        return $data;
+    }
 }

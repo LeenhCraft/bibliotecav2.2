@@ -1,4 +1,3 @@
-let divLoading = $("#divLoading");
 function resend_notification(ths, e) {
   e.preventDefault();
   let data = $(ths).serialize();
