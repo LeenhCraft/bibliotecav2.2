@@ -4,9 +4,18 @@ namespace App\Controllers;
 
 class Controller
 {
+
+    public function __construct()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        codigo_visita();
+    }
+
     public function view($route, $data = [])
     {
-        extract($data); //extrae los datos del array y los convierte en variables
+        // extract($data); //extrae los datos del array y los convierte en variables
         $route = str_replace(".", "/", $route);
         if (file_exists("../app/resources/views/{$route}.php")) {
             ob_start();

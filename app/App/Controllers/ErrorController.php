@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use Slim\Psr7\Response;
 
-class ErrorController
+class ErrorController extends Controller
 {
     public function notFound($resquest, $exception, $displayErrorDetails)
     {

@@ -6,10 +6,10 @@ use mysqli;
 
 class Model
 {
-    protected $db_host = DB_HOST;
-    protected $db_user = DB_USER;
-    protected $db_pass = DB_PASS;
-    protected $db_name = DB_NAME;
+    protected $db_host;
+    protected $db_user;
+    protected $db_pass;
+    protected $db_name;
     protected $connection;
     protected $query;
     protected $table;
@@ -17,10 +17,14 @@ class Model
 
     protected $sql, $data = [], $params = null;
 
-    protected $orderBy = "";
+    protected $orderBy = "", $limit = "";
 
     public function __construct()
     {
+        $this->db_host = $_ENV['DB_HOST'];
+        $this->db_user = $_ENV['DB_USERNAME'];
+        $this->db_pass = $_ENV['DB_PASSWORD'];
+        $this->db_name = $_ENV['DB_DATABASE'];
         $this->connection();
     }
 
@@ -59,6 +63,12 @@ class Model
         return $this;
     }
 
+    public function limit($limit)
+    {
+        $this->limit = " LIMIT {$limit}";
+        return $this;
+    }
+
     public function first()
     {
         if (empty($this->query)) {
@@ -83,6 +93,8 @@ class Model
             }
 
             $this->sql .= $this->orderBy;
+
+            $this->sql .= $this->limit;
 
             $this->query($this->sql, $this->data, $this->params);
         }
