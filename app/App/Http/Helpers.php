@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\MenuModel;
 use App\Models\WebModel;
 
 function base_url()
@@ -14,20 +15,16 @@ function media()
 
 function headerWeb($view, $data = [])
 {
-    extract($data); //extrae los datos del array y los convierte en variables
-    // $nombre = (isset($_SESSION['pe_u'])) ? getName2('')['usu_nombre'] : $_SESSION['visita'];
+    extract($data);
     $webModel = new WebModel();
+    $menuModel = new MenuModel();
     $id = $_SESSION['lnh'] ?? 0;
     $nombre = $webModel->query("SELECT * FROM web_usuarios WHERE idwebusuario = {$id}")->first();
     $nombre = $nombre['usu_nombre'] ?? $_SESSION['visita'];
-    // $cant = can_carrito();
     $cant = 0;
-    $dnone = 'style="display: none;"';
-    // if ($data['cant'] > 0) {
-    //     $cant = $data['cant'];
-    //     $dnone = '';
-    // }
+    $dnon = 'style="display: none;"';
     $view = str_replace('.', '/', $view);
+    $menus = $menuModel->menus();
     $view_header = "../app/resources/views/$view.php";
     require_once $view_header;
 }
@@ -317,4 +314,3 @@ function verifySignature($token, $timestamp, $signature)
     $expected_signature = hash_hmac('sha256', $token . $timestamp, $secret_key);
     return hash_equals($signature, $expected_signature);
 }
-
