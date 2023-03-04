@@ -38,6 +38,7 @@ $app->get('/email', RegisterController::class . ':sendEmail');
 
 $app->group('/me', function (RouteCollectorProxy $group) {
     $group->get("", AccountController::class . ':index');
-    $group->get("/account", AccountController::class . ':account');
-    $group->get("/my-books", AccountController::class . ':edit');
+    $group->post("", AccountController::class . ':updateAccount');
+    $group->get('/forgot-password', AccountController::class . ':formForgotPassword');
+    $group->post('/forgot-password', AccountController::class . ':changePassword');
 })->add(new RegisterMiddleware());

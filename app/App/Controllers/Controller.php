@@ -32,11 +32,6 @@ class Controller
         header("Location: {$route}");
     }
 
-    public function leenh()
-    {
-        return "leenh";
-    }
-
     public function respondWithError($response, $message)
     {
         return $this->respondWithJson($response, ["status" => false, "message" => $message]);
