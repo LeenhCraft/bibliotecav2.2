@@ -32,6 +32,15 @@ class Controller
         header("Location: {$route}");
     }
 
+    public function render($response, $route, $data = [])
+    {
+        $payload = $this->view($route, $data);
+        $response->getBody()->write($payload);
+        return $response
+            ->withHeader('Content-Type', 'text/html')
+            ->withStatus(200);
+    }
+
     public function respondWithError($response, $message)
     {
         return $this->respondWithJson($response, ["status" => false, "message" => $message]);
@@ -51,7 +60,7 @@ class Controller
             ->withStatus(200);
     }
 
-    public function sanitizar($data)
+    public function sanitize($data)
     {
         foreach ($data as $key => $value) {
             $data[$key] = strClean($value);

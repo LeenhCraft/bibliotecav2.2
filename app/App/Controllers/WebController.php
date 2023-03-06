@@ -8,15 +8,12 @@ class WebController extends Controller
 {
     public function index($request, $response, $args)
     {
-        $return = $this->view("Web.web", [
+        return $this->render($response, "Web.web", [
             "data" => [
                 "cant" => 10,
                 "title" => "Web",
-                // "items_banner" => $this->items_banner()
             ]
         ]);
-        $response->getBody()->write($return);
-        return $response;
     }
 
     private function items_banner()

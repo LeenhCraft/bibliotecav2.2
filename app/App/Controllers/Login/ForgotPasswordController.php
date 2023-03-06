@@ -28,7 +28,7 @@ class ForgotPasswordController extends Controller
         $csrfNameKey = $this->guard->getTokenNameKey();
         $csrfValueKey = $this->guard->getTokenValueKey();
         $keyPair = $this->guard->generateToken();
-        $return = $this->view("Web.Login.forgotPassword", [
+        return $this->render($response, "Web.Login.forgotPassword", [
             "data" => [
                 'title' => 'Login',
             ],
@@ -41,15 +41,13 @@ class ForgotPasswordController extends Controller
                 "key" => $keyPair
             ],
         ]);
-        $response->getBody()->write($return);
-        return $response;
     }
 
     public function forgot($request, $response, $args)
     {
         //obtener datos
         // sanitizar datos
-        $data = $this->sanitizar($request->getParsedBody());
+        $data = $this->sanitize($request->getParsedBody());
 
         // valdiar token
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
@@ -92,7 +90,7 @@ class ForgotPasswordController extends Controller
         $data = array_merge($request->getQueryParams(), $args);
         // return $this->respondWithSuccess($response, $data);
 
-        $data = $this->sanitizar($data);
+        $data = $this->sanitize($data);
         $usuarioModel = new UsuarioModel();
         $usuario = $usuarioModel->where("usu_usuario", "LIKE", $data["email"])->where("usu_estado", 1)->first();
         if (!empty($usuario)) {
@@ -101,7 +99,7 @@ class ForgotPasswordController extends Controller
                     $csrfNameKey = $this->guard->getTokenNameKey();
                     $csrfValueKey = $this->guard->getTokenValueKey();
                     $keyPair = $this->guard->generateToken();
-                    $return = $this->view("Web.Login.resetPassword", [
+                    return  $this->render($response, "Web.Login.resetPassword", [
                         "data" => [
                             'title' => 'Reset Password',
                         ],
@@ -115,8 +113,6 @@ class ForgotPasswordController extends Controller
                         ],
                         "email" => $data["email"],
                     ]);
-                    $response->getBody()->write($return);
-                    return $response;
                 }
             }
         }
@@ -128,7 +124,7 @@ class ForgotPasswordController extends Controller
     {
         //obtener datos
         // sanitizar datos
-        $data = $this->sanitizar($request->getParsedBody());
+        $data = $this->sanitize($request->getParsedBody());
 
         // valdiar token
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);

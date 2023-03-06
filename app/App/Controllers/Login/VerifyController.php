@@ -21,7 +21,7 @@ class verifyController extends Controller
         }
         // dep(time() - $dataUsuario["usu_expire"]);
         if (time() - $dataUsuario["usu_expire"] > 0) { // si el token ha expirado
-            $rq = $this->view("Web.resendEmail", [
+            return $this->render("Web.resendEmail", [
                 "data" => [
                     'title' => 'Resend Email',
                 ],
@@ -30,8 +30,6 @@ class verifyController extends Controller
                 "token" => $dataUsuario["usu_token"],
                 "expires" => $dataUsuario["usu_expire"],
             ]);
-            $response->getBody()->write($rq);
-            return $response;
         }
 
 
@@ -64,7 +62,7 @@ class verifyController extends Controller
     {
         $registerController = new RegisterController();
         $usuarioModel = new UsuarioModel();
-        $data = $registerController->sanitizar($request->getParsedBody()); // obtenemos los datos del formulario y sanitizamos los datos
+        $data = $registerController->sanitize($request->getParsedBody()); // obtenemos los datos del formulario y sanitizamos los datos
 
         // $usuario = $usuarioModel->where("usu_token", "LIKE", $data["_token"] ?? "#")->first();
         $usuario = $usuarioModel->usaurioToken($data['_token'] ?? "#");

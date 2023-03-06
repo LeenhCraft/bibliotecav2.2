@@ -50,7 +50,7 @@ class AccountController extends Controller
 
     public function updateAccount($request, $response, $args)
     {
-        $data = $this->sanitizar($request->getParsedBody());
+        $data = $this->sanitize($request->getParsedBody());
         // validar datos
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
         if (!$validate) {

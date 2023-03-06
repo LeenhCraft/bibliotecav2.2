@@ -11,22 +11,8 @@ const Toast = Swal.mixin({
     toast.addEventListener("mouseleave", Swal.resumeTimer);
   },
 });
-
-// Funcion para limitar el numero de caracteres de un textarea o input
-// Tiene que recibir el evento, valor y número máximo de caracteres
 function limitar(e, contenido, caracteres) {
-  // obtenemos la tecla pulsada
   var unicode = e.keyCode ? e.keyCode : e.charCode;
-
-  // Permitimos las siguientes teclas:
-  // 8 backspace
-  // 46 suprimir
-  // 13 enter
-  // 9 tabulador
-  // 37 izquierda
-  // 39 derecha
-  // 38 subir
-  // 40 bajar
   if (
     unicode == 8 ||
     unicode == 46 ||
@@ -39,7 +25,6 @@ function limitar(e, contenido, caracteres) {
   )
     return true;
 
-  // Si ha superado el limite de caracteres devolvemos false
   if (contenido.length >= caracteres) return false;
 
   return true;

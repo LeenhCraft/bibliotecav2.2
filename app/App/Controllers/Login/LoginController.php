@@ -26,7 +26,7 @@ class LoginController extends Controller
         $csrfNameKey = $this->guard->getTokenNameKey();
         $csrfValueKey = $this->guard->getTokenValueKey();
         $keyPair = $this->guard->generateToken();
-        $return = $this->view("Web.Login.login", [
+        return $this->render($response, "Web.Login.login", [
             "data" => [
                 'title' => 'Login',
             ],
@@ -39,13 +39,11 @@ class LoginController extends Controller
                 "key" => $keyPair
             ],
         ]);
-        $response->getBody()->write($return);
-        return $response;
     }
 
     public function login($request, $response, $args)
     {
-        $data = $this->sanitizar($request->getParsedBody());
+        $data = $this->sanitize($request->getParsedBody());
 
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
 
@@ -76,7 +74,8 @@ class LoginController extends Controller
             $_SESSION['pe'] = true;
             $msg = "Bienvenido! " . $usuario["usu_nombre"];
             $this->guard->removeAllTokenFromStorage();
-            return $this->respondWithJson($response, ["status" => true, "message" => $msg]);
+            return $this->respondWithSuccess($response, $msg);
+            // return $this->respondWithJson($response, ["status" => true, "message" => $msg]);
         }
         $msg = "Erorr inesperado";
         return $this->respondWithError($response, $msg);

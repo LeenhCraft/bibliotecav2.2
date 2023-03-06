@@ -1,16 +1,19 @@
 <?php
 
+use App\Models\Admin\LoginAdminModel;
 use App\Models\MenuModel;
 use App\Models\WebModel;
 
 function base_url()
 {
-    return BASE_URL;
+    // return BASE_URL;
+    return $_ENV['APP_URL'] . '/';
 }
 
 function media()
 {
-    return BASE_URL . "Assets/";
+    // return BASE_URL . "Assets/";
+    return base_url() . "Assets/";
 }
 
 function headerWeb($view, $data = [])
@@ -34,6 +37,19 @@ function footerWeb($view, $data = [])
     extract($data); //extrae los datos del array y los convierte en variables
     $view = str_replace('.', '/', $view);
     $view_footer =  "../app/resources/views/$view.php";
+    require_once $view_footer;
+}
+
+function headerApp($view, $data = "")
+{
+    $nombre = getName($_SESSION['app_id']);
+    $view_header = "../app/resources/views/App/{$view}.php";
+    require_once $view_header;
+}
+
+function footerApp($view, $data = "")
+{
+    $view_footer = "../app/resources/views/App/$view.php";
     require_once $view_footer;
 }
 
@@ -263,7 +279,7 @@ function enviarEmail($data, $template)
         $mail->Port       = $dataEmail['em_port'];                                   //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
         //Recipients
-        $mail->setFrom('servicios@leenhcraft.com', NOMBRE_EMPRESA);
+        $mail->setFrom('servicios@leenhcraft.com', $_ENV['APP_NAME']);
         $mail->addAddress($emailDestino, $nombreDestino);     //Add a recipient
         // $mail->addAddress("2018100486@ucss.pe", "ucss");     //Add a recipient
         // $mail->addAddress('ellen@example.com');               //Name is optional
@@ -313,4 +329,39 @@ function verifySignature($token, $timestamp, $signature)
     // Verificar si la firma es válida
     $expected_signature = hash_hmac('sha256', $token . $timestamp, $secret_key);
     return hash_equals($signature, $expected_signature);
+}
+
+function menus()
+{
+    $mn = new MenuModel();
+    $data = $mn->app_menus($_SESSION['app_r']);
+    return $data;
+}
+
+function submenus(int $idmenu)
+{
+    $mn = new MenuModel();
+    $data = $mn->app_submenus($idmenu);
+    return $data;
+}
+
+function pertenece($submen, $menu)
+{
+    $mn = new MenuModel();
+    $request = $mn->app_pertenece($submen, $menu);
+    return (!empty($request)) ? true : false;
+}
+
+function getName(int $id)
+{
+    $mn = new LoginAdminModel();
+    $arrPermisos = $mn->bscUsu($id);
+    if (ucfirst($arrPermisos['rol']) == 'Root') {
+        $arrPermisos['rol'] = '<span class="badge bg-danger">' . $arrPermisos['rol'] . '</span>';
+    } else if (ucfirst($arrPermisos['rol']) == 'Administrador') {
+        $arrPermisos['rol'] = '<span class="badge bg-success">' . $arrPermisos['rol'] . '</span>';
+    } else {
+        $arrPermisos['rol'] = '<span class="badge bg-info">' . $arrPermisos['rol'] . '</span>';
+    }
+    return $arrPermisos;
 }

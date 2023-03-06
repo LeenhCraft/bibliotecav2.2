@@ -27,7 +27,7 @@ class RegisterController extends Controller
         $csrfValueKey = $this->guard->getTokenValueKey();
         $keyPair = $this->guard->generateToken();
 
-        $return = $this->view("Web.Login.register", [
+        return $this->render($response,"Web.Login.register", [
             "data" => [
                 'title' => 'Register',
             ],
@@ -38,13 +38,11 @@ class RegisterController extends Controller
                 "key" => $keyPair
             ],
         ]);
-        $response->getBody()->write($return);
-        return $response;
     }
 
     public function save($request, $response, $args)
     {
-        $data = $this->sanitizar($request->getParsedBody()); // obtenemos los datos del formulario y sanitizamos los datos
+        $data = $this->sanitize($request->getParsedBody()); // obtenemos los datos del formulario y sanitizamos los datos
 
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
 
