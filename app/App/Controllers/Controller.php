@@ -32,13 +32,20 @@ class Controller
         header("Location: {$route}");
     }
 
+    public function leenh()
+    {
+        return "ee";
+    }
+
     public function render($response, $route, $data = [])
     {
+
         $payload = $this->view($route, $data);
         $response->getBody()->write($payload);
         return $response
             ->withHeader('Content-Type', 'text/html')
             ->withStatus(200);
+        return $response;
     }
 
     public function respondWithError($response, $message)
@@ -66,5 +73,18 @@ class Controller
             $data[$key] = strClean($value);
         }
         return $data;
+    }
+
+    public function get_method($cadena)
+    {
+        $methodName = explode('::', $cadena);
+        return end($methodName);
+    }
+
+    public function className($cadena)
+    {
+        $cadena = get_class($cadena);
+        $class = explode('\\', $cadena);
+        return end($class);
     }
 }

@@ -4,7 +4,9 @@ namespace App\Models;
 
 class MenuModel extends Model
 {
-    protected $table = 'web_menus';
+    public $table = 'web_menus';
+
+    public $id = 'idmenu';
 
     protected $sql;
 
@@ -64,5 +66,20 @@ class MenuModel extends Model
         $sql = "SELECT * FROM sis_submenus WHERE idmenu = '$menu' AND sub_url like BINARY '$submenu'";
         $request = $this->query($sql)->first();
         return $request;
+    }
+
+    public function app_menu_permisos($controlador)
+    {
+        $idrol = $_SESSION['app_r'] ?? '0';
+        $sql = "SELECT * FROM sis_permisos a 
+        INNER JOIN sis_submenus b ON a.idsubmenu=b.idsubmenu 
+        WHERE b.sub_controlador LIKE BINARY '$controlador' AND a.idrol='$idrol'";
+        $request = $this->query($sql)->first();
+        return [
+            'perm_r' => (!empty($request['perm_r']) ? $request['perm_r'] : '0'),
+            'perm_w' => (!empty($request['perm_w']) ? $request['perm_w'] : '0'),
+            'perm_u' => (!empty($request['perm_u']) ? $request['perm_u'] : '0'),
+            'perm_d' => (!empty($request['perm_d']) ? $request['perm_d'] : '0')
+        ];
     }
 }

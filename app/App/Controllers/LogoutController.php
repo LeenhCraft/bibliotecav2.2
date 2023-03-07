@@ -12,4 +12,13 @@ class LogoutController extends Controller
             ->withHeader('Location', base_url())
             ->withStatus(302);
     }
+
+    public function admin($request, $response, $args)
+    {
+        session_unset();
+        session_destroy();
+        return $response
+            ->withHeader('Location', base_url() . 'admin/login')
+            ->withStatus(302);
+    }
 }

@@ -12,7 +12,7 @@ $expand = $active = '';
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
-        <li class="menu-item active">
+        <li class="menu-item <?= $ctrl === $data['url'] ? 'active' : '' ?>">
             <a href="<?= $data['url'] ?>" class="menu-link">
                 <i class='menu-icon tf-icons bx bx bxs-dashboard'></i>
                 <div>
@@ -26,7 +26,7 @@ $expand = $active = '';
             foreach ($menus as $row) :
                 if ($row['men_url_si'] == 1) :
                     $active = ($row['men_url'] == $ctrl) ? 'active' : '';
-                    $menburl = ($row['men_url'] != '#') ? '/' . $row['men_url'] : '#';
+                    $menburl = ($row['men_url'] != '#') ? $row['men_url'] : '#';
         ?>
                     <li class="menu-item <?php echo $active; ?>">
                         <a href="<?php echo $menburl; ?>" class="menu-link">
@@ -49,7 +49,7 @@ $expand = $active = '';
                             <?php
                             foreach ($submenus as $key) :
                                 $active = ($key['sub_url'] == $ctrl) ? 'active' : '';
-                                $suburl = ($key['sub_url'] != '#') ? '/' . $key['sub_url'] : '#';
+                                $suburl = ($key['sub_url'] != '#') ? $key['sub_url'] : '#';
                             ?>
                                 <li class="menu-item <?php echo $active; ?>">
                                     <a href="<?php echo $suburl; ?>" class="menu-link">

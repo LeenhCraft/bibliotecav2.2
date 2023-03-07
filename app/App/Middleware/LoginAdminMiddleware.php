@@ -18,15 +18,17 @@ class LoginAdminMiddleware
      */
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        $response = $handler->handle($request);
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
         if (!isset($_SESSION['app_session'])) {
+            $response = new Response();
             return $response
                 ->withHeader('Location', base_url() . 'admin/login')
                 ->withStatus(302);
+        } else {
+            $response = $handler->handle($request);
+            return $response;
         }
-        return $response;
     }
 }

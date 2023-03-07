@@ -103,8 +103,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <span class="fw-semibold d-block"><?php echo $nombre['nombre']; ?></span>
-                                                    <small class="text-muted"><?php echo $nombre['rol']; ?></small>
+                                                    <span class="fw-semibold d-block"><?php echo $nombre['nombre'] ?? "UNDEFINED"; ?></span>
+                                                    <small class="text-muted"><?php echo $nombre['rol'] ?? "UNDEFINED"; ?></small>
                                                 </div>
                                             </div>
                                         </a>
@@ -137,7 +137,7 @@
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="/logout">
+                                        <a class="dropdown-item" href="/admin/logout">
                                             <i class="bx bx-power-off me-2"></i>
                                             <span class="align-middle">Log Out</span>
                                         </a>

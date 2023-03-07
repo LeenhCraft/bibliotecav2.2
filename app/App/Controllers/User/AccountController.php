@@ -30,7 +30,7 @@ class AccountController extends Controller
         $csrfNameKey = $this->guard->getTokenNameKey();
         $csrfValueKey = $this->guard->getTokenValueKey();
         $keyPair = $this->guard->generateToken();
-        $return = $this->view("Web.User.account", [
+        return $this->render($response, "Web.User.account", [
             "data" => [
                 'title' => 'Mi cuenta',
             ],
@@ -44,8 +44,22 @@ class AccountController extends Controller
             ],
             "user" => $usuario,
         ]);
-        $response->getBody()->write($return);
-        return $response;
+        // $return = $this->view("Web.User.account", [
+        //     "data" => [
+        //         'title' => 'Mi cuenta',
+        //     ],
+        //     "js" => [
+        //         "js/web/account.js"
+        //     ],
+        //     "tk" => [
+        //         "name" => $csrfNameKey,
+        //         "value" => $csrfValueKey,
+        //         "key" => $keyPair
+        //     ],
+        //     "user" => $usuario,
+        // ]);
+        // $response->getBody()->write($return);
+        // return $response;
     }
 
     public function updateAccount($request, $response, $args)

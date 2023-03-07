@@ -29,4 +29,7 @@
         </div>
     </div>
 </section>
+<?php
+dep($_SESSION);
+?>
 <?php footerWeb('Web.Template.footer_web', $data); ?>

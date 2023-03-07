@@ -42,7 +42,7 @@ function footerWeb($view, $data = [])
 
 function headerApp($view, $data = "")
 {
-    $nombre = getName($_SESSION['app_id']);
+    $nombre = getName($_SESSION['app_id'] ?? 0);
     $view_header = "../app/resources/views/App/{$view}.php";
     require_once $view_header;
 }
@@ -51,6 +51,12 @@ function footerApp($view, $data = "")
 {
     $view_footer = "../app/resources/views/App/$view.php";
     require_once $view_footer;
+}
+
+function getModal($ruta, $data = "")
+{
+    $view_modal = "../app/resources/views/App/Template/Modals/{$ruta}.php";
+    require_once $view_modal;
 }
 
 function dep($data, $exit = 0)
@@ -356,12 +362,20 @@ function getName(int $id)
 {
     $mn = new LoginAdminModel();
     $arrPermisos = $mn->bscUsu($id);
-    if (ucfirst($arrPermisos['rol']) == 'Root') {
-        $arrPermisos['rol'] = '<span class="badge bg-danger">' . $arrPermisos['rol'] . '</span>';
-    } else if (ucfirst($arrPermisos['rol']) == 'Administrador') {
-        $arrPermisos['rol'] = '<span class="badge bg-success">' . $arrPermisos['rol'] . '</span>';
-    } else {
-        $arrPermisos['rol'] = '<span class="badge bg-info">' . $arrPermisos['rol'] . '</span>';
+    if (!empty($arrPermisos)) {
+        if (ucfirst($arrPermisos['rol']) == 'Root') {
+            $arrPermisos['rol'] = '<span class="badge bg-danger">' . $arrPermisos['rol'] . '</span>';
+        } else if (ucfirst($arrPermisos['rol']) == 'Administrador') {
+            $arrPermisos['rol'] = '<span class="badge bg-success">' . $arrPermisos['rol'] . '</span>';
+        } else {
+            $arrPermisos['rol'] = '<span class="badge bg-info">' . $arrPermisos['rol'] . '</span>';
+        }
     }
     return $arrPermisos;
+}
+
+function getPermisos($idmod)
+{
+    $obj = new MenuModel;
+    return $obj->app_menu_permisos($idmod);
 }
