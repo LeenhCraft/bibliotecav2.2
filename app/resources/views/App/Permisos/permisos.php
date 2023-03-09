@@ -2,13 +2,13 @@
 <div class="card">
     <div class="card-header">
         <?php
-        // if ($data['permisos']['perm_w'] == 1) :
+        if ($data['permisos']['perm_w'] == 1) :
         ?>
         <button class="btn btn-primary ft-b" type="button" onclick="openModal();">
             <i class='bx bx-plus-circle'></i> Nuevo Permisos
         </button>
         <?php
-        // endif;
+        endif;
         ?>
     </div>
     <div class="table-responsive text-nowrap mb-4">
@@ -32,8 +32,8 @@
     </div>
 </div>
 <?php
-// if ($data['permisos']['perm_w'] == 1 || $data['permisos']['perm_u'] == 1) :
+if ($data['permisos']['perm_w'] == 1 || $data['permisos']['perm_u'] == 1) :
 getModal('mdlPermisos', $data);
-// endif;
+endif;
 footerApp('Template/footer_dash', $data);
 ?>

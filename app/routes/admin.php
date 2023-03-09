@@ -8,7 +8,10 @@ use Slim\Routing\RouteCollectorProxy;
 use App\Controllers\Admin\LoginAdminController;
 use App\Controllers\Admin\MenusController;
 use App\Controllers\Admin\PermisosController;
+use App\Controllers\Admin\PersonController;
+use App\Controllers\Admin\RolController;
 use App\Controllers\Admin\SubmenusController;
+use App\Controllers\Admin\UserController;
 use App\Controllers\LogoutController;
 use App\Middleware\AdminMiddleware;
 
@@ -42,6 +45,7 @@ $app->group('/admin', function (RouteCollectorProxy $group) {
         $group->post('/search', SubmenusController::class . ':search');
         $group->post('/delete', SubmenusController::class . ':delete');
     });
+
     $group->group('/permisos', function (RouteCollectorProxy $group) {
         $group->get('', PermisosController::class . ':index');
         $group->post('', PermisosController::class . ':list');
@@ -50,5 +54,37 @@ $app->group('/admin', function (RouteCollectorProxy $group) {
         $group->post('/active', PermisosController::class . ':active');
         $group->post('/roles', PermisosController::class . ':roles');
         $group->post('/submenus', PermisosController::class . ':submenus');
+    });
+
+    $group->group('/user', function (RouteCollectorProxy $group) {
+        $group->get('', UserController::class . ':index');
+        $group->post('/roles', UserController::class . ':roles');
+        $group->post('/person', UserController::class . ':person');
+
+        $group->post('', UserController::class . ':list');
+        $group->post('/save', UserController::class . ':store');
+        $group->post('/search', UserController::class . ':search');
+        $group->post('/update', UserController::class . ':update');
+        $group->post('/delete', UserController::class . ':delete');
+    });
+
+    $group->group('/person', function (RouteCollectorProxy $group) {
+        $group->get('', PersonController::class . ':index');
+
+        $group->post('', PersonController::class . ':list');
+        $group->post('/save', PersonController::class . ':store');
+        $group->post('/search', PersonController::class . ':search');
+        $group->post('/update', PersonController::class . ':update');
+        $group->post('/delete', PersonController::class . ':delete');
+    });
+
+    $group->group('/rol', function (RouteCollectorProxy $group) {
+        $group->get('', RolController::class . ':index');
+
+        $group->post('', RolController::class . ':list');
+        $group->post('/save', RolController::class . ':store');
+        $group->post('/search', RolController::class . ':search');
+        $group->post('/update', RolController::class . ':update');
+        $group->post('/delete', RolController::class . ':delete');
     });
 })->add(new LoginAdminMiddleware());
