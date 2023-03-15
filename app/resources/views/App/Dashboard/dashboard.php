@@ -119,5 +119,6 @@ if ($_SESSION['app_r'] == '1') {
     </div>
 <?php
 }
+dep($_SESSION);
 ?>
 <?php footerApp('Template/footer_dash', $data) ?>

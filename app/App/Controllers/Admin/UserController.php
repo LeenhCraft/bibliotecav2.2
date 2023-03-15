@@ -49,9 +49,9 @@ class UserController extends Controller
             $btnDelete = '';
 
             if ($arrData[$i]['estado'] == 1) {
-                $arrData[$i]['estado'] = '<span class="badge rounded-pill bg-success">A</span>';
+                $arrData[$i]['estado'] = "<i class='bx-1 bx bx-check text-success'></i>";
             } else {
-                $arrData[$i]['estado'] = '<span class="badge rounded-pill bg-danger">I</span>';
+                $arrData[$i]['estado'] = "<i class='bx-1 bx bx-x text-danger'></i>";
             }
             if ($this->permisos['perm_u'] == '1') {
                 $btnEdit = '<button class="btn btn-success btn-sm" onClick="fntEdit(' . $arrData[$i]['id'] . ')" title="Editar Autor"><i class="bx bx-pencil"></i></button>';

@@ -58,21 +58,9 @@ class SubmenusController extends Controller
                 $btnDelete = '<button class="btn btn-danger btn-sm" onClick="fntDel(' . $arrData[$i]['idsubmenu'] . ')" title="Eliminar Submenus"><i class="bx bxs-trash-alt" ></i></button>';
             }
             if ($arrData[$i]['sub_visible'] == 1) {
-                // $arrData[$i]['ver'] = '<span class="badge badge-success px-3 p-y2">Si</span>';
-                $arrData[$i]['ver'] = '
-                <div class="border-0 d-flex justify-content-center">
-                    <div class="input-group-text border-0">
-                        <input class="form-check-input mt-0" type="checkbox" checked>
-                    </div>
-                </div>';
+                $arrData[$i]['ver'] = "<i class='bx-1 bx bx-check text-success'></i>";
             } else {
-                // $arrData[$i]['ver'] = '<span class="badge badge-danger px-3 py-2">No</span>';
-                $arrData[$i]['ver'] = '
-                <div class="border-0 d-flex justify-content-center">
-                    <div class="input-group-text border-0">
-                        <input class="form-check-input mt-0" type="checkbox">
-                    </div>
-                </div>';
+                $arrData[$i]['ver'] = "<i class='bx-1 bx bx-x text-danger'></i>";
             }
             $arrData[$i]['options'] = '<div class="btn-group text-center" role="group" aria-label="Basic example">' . $btnView . ' ' . $btnEdit . ' ' . $btnDelete . '</div>';
             $arrData[$i]['menu'] = '<i class="bx ' . $arrData[$i]['men_icono'] . '"></i> ' . ucwords($arrData[$i]['men_nombre']);
@@ -110,9 +98,10 @@ class SubmenusController extends Controller
 
         $rq = $model->create([
             "idmenu" => $data["idmenu"],
-            "sub_nombre" => $data["name"],
+            "sub_nombre" => ucfirst($data["name"]),
             "sub_url" => $data['url'],
             "sub_controlador" => $data['controller'],
+            "sub_metodo" => $data['method'],
             "sub_icono" => $data['icon'] ?: "bx-circle",
             "sub_orden" => $data['order'] ?: 1,
             "sub_visible" => $data['visible'] ?: 0,
@@ -137,6 +126,9 @@ class SubmenusController extends Controller
             return false;
         }
         if (empty($data["controller"])) {
+            return false;
+        }
+        if (empty($data["method"])) {
             return false;
         }
         return true;
@@ -172,7 +164,7 @@ class SubmenusController extends Controller
     public function menus($request, $response)
     {
         $menuModel = new MenuModel;
-        $arrData = $menuModel->query("SELECT idmenu as id, men_nombre as nombre FROM sis_menus ORDER BY men_orden ASC")->get();
+        $arrData = $menuModel->query("SELECT idmenu as id, men_nombre as nombre FROM sis_menus ORDER BY idmenu DESC")->get();
         return $this->respondWithJson($response, ["status" => true, "data" => $arrData]);
     }
 
@@ -202,9 +194,10 @@ class SubmenusController extends Controller
 
         $rq = $model->update($data['id'], [
             "idmenu" => $data["idmenu"],
-            "sub_nombre" => $data["name"],
+            "sub_nombre" => ucfirst($data["name"]),
             "sub_url" => $data['url'],
             "sub_controlador" => $data['controller'],
+            "sub_metodo" => $data['method'],
             "sub_icono" => $data['icon'] ?: "bx-circle",
             "sub_orden" => $data['order'] ?: 1,
             "sub_visible" => $data['visible'] ?: 0,
@@ -232,6 +225,9 @@ class SubmenusController extends Controller
             return false;
         }
         if (empty($data["controller"])) {
+            return false;
+        }
+        if (empty($data["method"])) {
             return false;
         }
         return true;

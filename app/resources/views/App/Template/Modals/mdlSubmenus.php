@@ -33,13 +33,19 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="form-group col-md-6 col-12">
+                    <div class="form-group col-md-12 col-12">
                         <label for="url">Url</label>
                         <input type="text" class="form-control" id="url" name="url">
                     </div>
+                </div>
+                <div class="row mb-3">
                     <div class="form-group col-md-6 col-12">
                         <label for="controller">Controlador</label>
                         <input type="text" class="form-control" id="controller" name="controller">
+                    </div>
+                    <div class="form-group col-md-6 col-12">
+                        <label for="method">Metodo</label>
+                        <input type="text" class="form-control" id="method" name="method">
                     </div>
                 </div>
                 <div class="row mb-3">

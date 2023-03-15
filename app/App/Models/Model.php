@@ -168,6 +168,24 @@ class Model
         return $this;
     }
 
+    public function orWhere($column, $operator = "=", $value = null)
+    {
+        if ($value == null) {
+            $value = $operator;
+            $operator = "=";
+        }
+
+        if (empty($this->sql)) {
+            $this->sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$this->table} WHERE {$column} {$operator} ?";
+
+            $this->data[] = $value;
+        } else {
+            $this->sql .= " OR {$column} {$operator} ?";
+            $this->data[] = $value;
+        }
+        return $this;
+    }
+
     public function create($data)
     {
         $columns = implode(", ", array_keys($data));

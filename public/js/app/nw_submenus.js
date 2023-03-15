@@ -66,6 +66,7 @@ function fntEdit(id) {
       $("#name").val(data.data.sub_nombre);
       $("#url").val(data.data.sub_url);
       $("#controller").val(data.data.sub_controlador);
+      $("#method").val(data.data.sub_metodo);
       $("#icon").val(data.data.sub_icono);
       $("#order").val(data.data.sub_orden);
       $("#visible").val(data.data.sub_visible);
@@ -151,6 +152,7 @@ function update(ths, e) {
   let sub_nombre = $("#name").val();
   let sub_url = $("#url").val();
   let sub_controlador = $("#controller").val();
+  let sub_method = $("#method").val();
   let form = $(ths).serialize();
   console.log(form);
   if (sub_nombre == "") {
@@ -167,6 +169,10 @@ function update(ths, e) {
       "Es necesario el controlador para el submenu.",
       "warning"
     );
+    return false;
+  }
+  if (sub_method == "") {
+    Swal.fire("Atención", "Es necesario el metodo para el submenu.", "warning");
     return false;
   }
   divLoading.css("display", "flex");
@@ -188,6 +194,7 @@ function save(ths, e) {
   let sub_nombre = $("#name").val();
   let sub_url = $("#url").val();
   let sub_controlador = $("#controller").val();
+  let sub_method = $("#method").val();
   let form = $(ths).serialize();
   // console.log(form);
   if (sub_nombre == "") {
@@ -204,6 +211,10 @@ function save(ths, e) {
       "Es necesario el controlador para el submenu.",
       "warning"
     );
+    return false;
+  }
+  if (sub_method == "") {
+    Swal.fire("Atención", "Es necesario el metodo para el submenu.", "warning");
     return false;
   }
   divLoading.css("display", "flex");

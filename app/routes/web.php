@@ -15,6 +15,7 @@ use App\Controllers\WebController;
 
 // Middlewares
 use App\Middleware\LoginMiddleware;
+use App\Middleware\PermissionMiddleware;
 use App\Middleware\RegisterMiddleware;
 
 $app->get('/', WebController::class . ':index');

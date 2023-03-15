@@ -31,14 +31,14 @@
                         </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-6">
                             <label for="status">Status</label>
                             <select class="form-select text-capitalizem" id="status" name="status">
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-8">
+                        <div class="form-group col-md-6">
                             <label for="idrol">Rol</label>
                             <select class="form-select text-capitalize" data-live-search="true" id="idrol" name="idrol">
                             </select>

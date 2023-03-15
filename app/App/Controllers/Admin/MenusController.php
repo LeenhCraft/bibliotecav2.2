@@ -40,8 +40,7 @@ class MenusController extends Controller
     public function list($request, $response)
     {
         $model = new MenuAdminModel;
-        $arrData = $model->query("SELECT * FROM sis_menus")->orderBy("men_orden")->get();
-
+        $arrData = $model->query("SELECT * FROM sis_menus ORDER BY idmenu DESC")->get();
         $nmr = 0;
         for ($i = 0; $i < count($arrData); $i++) {
             $btnView = "";
@@ -58,22 +57,9 @@ class MenusController extends Controller
                 $btnDelete = '<button class="btn btn-danger btn-sm" onClick="fntDel(' . $arrData[$i]['idmenu'] . ')" title="Eliminar Menus"><i class="bx bxs-trash-alt" ></i></button>';
             }
             if ($arrData[$i]['men_visible'] == 1) {
-                // $arrData[$i]['ver'] = '<span class="badge badge-success px-2 p-y1">Si</span>';
-                $arrData[$i]['ver'] = '
-                    <div class="border-0 d-flex justify-content-center">
-                        <div class="input-group-text border-0">
-                            <input class="form-check-input mt-0" type="checkbox" checked>
-                        </div>
-                    </div>
-                    ';
+                $arrData[$i]['ver'] = "<i class='bx-1 bx bx-check text-success'></i>";
             } else {
-                // $arrData[$i]['ver'] = '<span class="badge badge-danger px-2 py-1">No</span>';
-                $arrData[$i]['ver'] = '
-                    <div class="border-0 d-flex justify-content-center">
-                        <div class="input-group-text border-0">
-                            <input class="form-check-input mt-0" type="checkbox">
-                        </div>
-                    </div>';
+                $arrData[$i]['ver'] = "<i class='bx-1 bx bx-x text-danger'></i>";
             }
 
             $arrData[$i]['options'] = '<div class="btn-group" role="group" aria-label="Basic example">' . $btnView . ' ' . $btnEdit . ' ' . $btnDelete . '</div>';
@@ -228,9 +214,9 @@ class MenusController extends Controller
                 return false;
             }
         }
-        if (empty($data["visible"])) {
-            return false;
-        }
+        // if (empty($data["visible"])) {
+        //     return false;
+        // }
         return true;
     }
 
