@@ -16,8 +16,8 @@
             <thead>
                 <tr>
                     <th width="10">N°</th>
-                    <th>Articulo</th>
-                    <th>Web</th>
+                    <th>libro</th>
+                    <th>Num interno</th>
                     <th>Estado</th>
                     <th width="30"></th>
                 </tr>
@@ -29,9 +29,10 @@
     </div>
 </div>
 <?php
+// dep($data['tk']);
 dep($_SESSION);
 if ($data['permisos']['perm_w'] == 1 || $data['permisos']['perm_u'] == 1) {
-    getModal('mdlLibros', $data);
+    getModal('mdlCopias', $data);
 }
 footerApp('Template/footer_dash', $data);
 ?>

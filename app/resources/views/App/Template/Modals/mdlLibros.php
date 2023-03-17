@@ -29,7 +29,7 @@
                     </ul>
                     <form id="form" onsubmit="return save(this,event)" enctype="multipart/form-data">
                         <div class="tab-content p-0">
-                            <div class="tab-pane p-4 fade active show" id="navs-uno" role="tabpanel">
+                            <div class="tab-pane pt-4 active show" id="navs-uno" role="tabpanel">
                                 <input type="hidden" id="id" name="id">
                                 <input type="hidden" name="<?= $data['tk']['name'] ?>" value="<?= $data['tk']['key'][$data['tk']['name']]  ?>">
                                 <input type="hidden" name="<?= $data['tk']['value'] ?>" value="<?= $data['tk']['key'][$data['tk']['value']] ?>">
@@ -40,14 +40,15 @@
                                             <label class="form-check-label" for="status">Activar/Desactivar</label>
                                         </div>
                                     </div>
-                                    <div class="col-auto">
+                                    <div class="col-auto d-none">
                                         <div class="form-check form-switch mb-2">
-                                            <input class="form-check-input" type="checkbox" id="unique" name="unique">
+                                            <input class="form-check-input" type="checkbox" id="unique" name="unique" onchange="alert()" checked>
                                             <label class="form-check-label" for="unique">Copia única</label>
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
+
                                 <div class="row">
                                     <div class="col-12 col-md-4">
                                         <div class="form-group mb-3">
@@ -73,31 +74,33 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-12 col-md-12">
-                                            <div class="form-group mb-3">
-                                                <label for="name">Nombre/Titulo:</label>
-                                                <input type="text" class="form-control" id="name" name="name" placeholder="Nombre o titulo del libro" onload="crearSlug(this.value)" onkeyup="crearSlug(this.value)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6 col-md-6">
-                                            <div class="form-group mb3">
-                                                <label for="date_publish">Fecha Publicación:</label>
-                                                <input id="date_publish" name="date_publish" type="date" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-6">
-                                            <div class="form-group mb3">
-                                                <label for="pages">Num Paginas:</label>
-                                                <input id="pages" name="pages" type="number" class="form-control" min="1" pattern="^[0-9]+">
-                                            </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-12">
+                                        <div class="form-group mb-3">
+                                            <label for="name">Nombre/Titulo:</label>
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre o titulo del libro" onload="crearSlug(this.value)" onkeyup="crearSlug(this.value)">
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-6 col-md-6">
+                                        <div class="form-group mb3">
+                                            <label for="date_publish">Fecha Publicación:</label>
+                                            <input id="date_publish" name="date_publish" type="date" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-6">
+                                        <div class="form-group mb3">
+                                            <label for="pages">Num Paginas:</label>
+                                            <input id="pages" name="pages" type="number" class="form-control" min="1" pattern="^[0-9]+">
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                            <div class="tab-pane p-4 fade" id="navs-dos" role="tabpanel">
+
+                            <div class="tab-pane pt-4 fade" id="navs-dos" role="tabpanel">
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group mb-3">

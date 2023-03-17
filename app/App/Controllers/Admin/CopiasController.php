@@ -2,16 +2,14 @@
 
 namespace App\Controllers\Admin;
 
-use App\Complements\ImageClass;
+use Slim\Csrf\Guard;
+use Slim\Psr7\Factory\ResponseFactory;
 use App\Controllers\Controller;
 use App\Models\TableModel;
 
-use Slim\Csrf\Guard;
-use Slim\Psr7\Factory\ResponseFactory;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Psr7\Request;
 
-class LibrosController extends Controller
+class CopiasController extends Controller
 {
 
     protected $permisos = [];
@@ -30,14 +28,14 @@ class LibrosController extends Controller
     {
         // return $response;
         // $this->guard->removeAllTokenFromStorage();
-        return $this->render($response, 'App.Libros.libros', [
-            'titulo_web' => 'Libros',
+        return $this->render($response, 'App.Libros.copias', [
+            'titulo_web' => 'Copias',
             "url" => $request->getUri()->getPath(),
             "permisos" => $this->permisos,
             'js' => [
                 'js/app/plugins/ckeditor/ckeditor.js',
                 'js/app/sample.js',
-                'js/app/libros.js',
+                'js/app/copias.js',
             ],
             "tk" => [
                 "name" => $this->guard->getTokenNameKey(),
@@ -50,10 +48,11 @@ class LibrosController extends Controller
     public function list($request, $response)
     {
         $model = new TableModel;
-        $model->setTable('bib_libros');
-        $model->setId("idlibro");
+        $model->setTable('bib_copias');
+        $model->setId("idcopias");
 
-        $arrData = $model->orderBy("idlibro", "DESC")->get();
+        $arrData = $model->orderBy("idcopias", "DESC")->get();
+        // dep([$arrData,count($arrData)],1);
         $data = [];
 
         $nmr = 0;
@@ -61,36 +60,31 @@ class LibrosController extends Controller
             $btnEdit = "";
             $btnDelete = "";
             $nmr++;
-            if ($arrData[$i]['lib_estado'] == 1) {
+            $libro = $model->query("SELECT lib_titulo FROM bib_libros WHERE idlibro = ?", [$arrData[$i]['idlibro']])->first();
+            if ($arrData[$i]['cop_estado'] == 1) {
                 $data[$i]['status'] = "<i class='bx-1 bx bx-check text-success'></i>";
             } else {
                 $data[$i]['status'] = "<i class='bx-1 bx bx-x text-danger'></i>";
             }
-            if ($arrData[$i]['lib_publicar'] == 1) {
-                $data[$i]['web'] = "<i class='bx-1 bx bx-check text-success'></i>";
-            } else {
-                $data[$i]['web'] = "<i class='bx-1 bx bx-x text-danger'></i>";
-            }
             if ($this->permisos['perm_u'] == 1) {
-                $btnEdit = '<button class="btn btn-success btn-sm" onClick="fntEdit(' . $arrData[$i]['idlibro'] . ')" title="Editar Libro"><i class="bx bxs-edit-alt"></i></button>';
+                $btnEdit = '<button class="btn btn-success btn-sm" onClick="fntEdit(' . $arrData[$i]['idcopias'] . ')" title="Editar Libro"><i class="bx bxs-edit-alt"></i></button>';
             }
             if ($this->permisos['perm_d'] == 1) {
-                $btnDelete = '<button class="btn btn-danger btn-sm" onClick="fntDel(' . $arrData[$i]['idlibro'] . ')" title="Eliminar Libro"><i class="bx bxs-trash-alt" ></i></button>';
+                $btnDelete = '<button class="btn btn-danger btn-sm" onClick="fntDel(' . $arrData[$i]['idcopias'] . ')" title="Eliminar Libro"><i class="bx bxs-trash-alt" ></i></button>';
             }
 
             $data[$i]['options'] = '<div class="btn-group" role="group" aria-label="Basic example">' . $btnEdit . ' ' . $btnDelete . '</div>';
             $data[$i]['num'] = $nmr;
-            $data[$i]['name'] = $arrData[$i]['lib_titulo'];
+            $data[$i]['name'] = $libro['lib_titulo'];
+            $data[$i]['cod'] = $arrData[$i]['cop_codinventario'];
         }
         return $this->respondWithJson($response, $data);
     }
 
-    public function store(Request $request, Response $response)
+    public function store($request, $response)
     {
         $data = $this->sanitize($request->getParsedBody());
-        // $image = new ImageClass;
-        // $image->cargarImagen($_FILES['photo'], "libro", false);
-        // return $this->respondWithJson($response, $_FILES);
+        // return $this->respondWithJson($response, $data);
 
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
         if (!$validate) {
@@ -105,50 +99,29 @@ class LibrosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_libros");
-        $model->setId("idlibro");
+        $model->setTable('bib_copias');
+        $model->setId("idcopias");
 
-        $existe = $model->orWhere("lib_titulo", $data['name'])->orWhere("lib_slug", $data['slug'])->where("lib_estado", '1')->first();
-        if (!empty($existe)) {
-            $msg = "Ya existe un articulo con el mismo nombre o slug";
-            return $this->respondWithError($response, $msg);
-        }
-
-        $data['slug'] = $data['slug'] ?? urls_amigables($data['name']);
+        $data['name'] = empty($data['name']) ? $data['idlibro'] : $data['name'];
         $rq = $model->create([
-            "idarticulo" => $data['idarticulo'] ?? 0,
-            "ideditorial" => $data['ideditorial'] ?? 0,
-            "lib_titulo" => ucfirst($data['name']) ?? "UNDEFINED",
-            "lib_slug" => strtolower($data['slug']),
-            "lib_descripcion" => $data['description'],
-            "lib_fecha_publi" => $data['date_publish'],
-            "lib_num_paginas" => $data['pages'],
-            "lib_estado" => isset($data['status']) && $data['status'] == "on" ? '1' : "0",
-            "lib_publicar" => isset($data['publish']) && $data['publish'] == "on" ? '1' : "0",
+            "idlibro" => $data['idlibro'] ?? 0,
+            "cop_codinventario" => $data['name'],
+            "cop_ubicacion" => ucfirst($data['ubicacion']) ?: "UNDEFINED",
+            "cop_copias_disponibles" => '1',
+            "cop_estado" => 1
         ]);
         if (!empty($rq)) {
-            // $image = new ImageClass;
-            // $image->cargarImagen($_FILES);
             $msg = "Datos guardados correctamente";
             return $this->respondWithSuccess($response, $msg);
         }
         $msg = "Error al guardar los datos";
-        return $this->respondWithJson($response, $existe);
+        return $this->respondWithJson($response, $msg);
     }
 
     public function validar($data)
     {
 
-        if (empty("idarticulo")) {
-            return false;
-        }
-        if (empty("idautor")) {
-            return false;
-        }
-        if (empty("ideditorial")) {
-            return false;
-        }
-        if (empty("name")) {
+        if (empty("idlibro")) {
             return false;
         }
         return true;
@@ -165,8 +138,8 @@ class LibrosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_libros");
-        $model->setId("idlibro");
+        $model->setTable('bib_copias');
+        $model->setId("idcopias");
 
         $rq = $model->find($data['id']);
         if (!empty($rq)) {
@@ -202,50 +175,31 @@ class LibrosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_libros");
-        $model->setId("idlibro");
+        $model->setTable('bib_copias');
+        $model->setId("idcopias");
 
-        $existe = $model->query("SELECT SQL_CALC_FOUND_ROWS * FROM bib_libros WHERE (lib_titulo = ? OR lib_slug = ?) AND idlibro != ?", [$data['name'], $data['slug'], $data['id']])->first();
-        if (!empty($existe)) {
-            $msg = "Ya tiene un libro con el mismo nombre o slug";
-            return $this->respondWithError($response, $msg);
-        }
-
-        $data['slug'] = $data['slug'] ?? urls_amigables($data['name']);
+        $data['name'] = $data['name'] ?? $data['idlibro'];
         $rq = $model->update($data['id'], [
-            "idarticulo" => $data['idarticulo'] ?? 0,
-            "ideditorial" => $data['ideditorial'] ?? 0,
-            "lib_titulo" => ucfirst($data['name']) ?? "UNDEFINED",
-            "lib_slug" => strtolower($data['slug']),
-            "lib_descripcion" => $data['description'],
-            "lib_fecha_publi" => $data['date_publish'],
-            "lib_num_paginas" => $data['pages'],
-            "lib_estado" => isset($data['status']) && $data['status'] == "on" ? '1' : "0",
-            "lib_publicar" => isset($data['publish']) && $data['publish'] == "on" ? '1' : "0",
+            "idlibro" => $data['idlibro'] ?? 0,
+            "cop_codinventario" => $data['name'] ?? 0,
+            "cop_ubicacion" => ucfirst($data['ubicacion']) ?? "UNDEFINED",
+            "cop_copias_disponibles" => '1',
+            "cop_estado" => 1
         ]);
         if (!empty($rq)) {
             $msg = "Datos actualizados";
             return $this->respondWithSuccess($response, $msg);
         }
         $msg = "Error al guardar los datos";
-        return $this->respondWithJson($response, $existe);
+        return $this->respondWithJson($response, $msg);
     }
 
     private function validarUpdate($data)
     {
-        if (empty($data["id"])) {
+        if (empty("id")) {
             return false;
         }
-        if (empty("idarticulo")) {
-            return false;
-        }
-        if (empty("idautor")) {
-            return false;
-        }
-        if (empty("ideditorial")) {
-            return false;
-        }
-        if (empty("name")) {
+        if (empty("idlibro")) {
             return false;
         }
         return true;
@@ -259,12 +213,12 @@ class LibrosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_libros");
-        $model->setId("idlibro");
+        $model->setTable('bib_copias');
+        $model->setId("idcopias");
 
         $rq = $model->find($data["id"]);
         if (!empty($rq)) {
-
+            // verificar 
             // $libro = $model->query("SELECT * FROM `bib_libros` WHERE `idarticulo` = {$data["id"]}")->first();
 
             // if (!empty($libro)) {
@@ -284,24 +238,10 @@ class LibrosController extends Controller
         return $this->respondWithError($response, $msg);
     }
 
-    public function autores($request, $response)
+    public function libros($request, $response)
     {
         $model = new TableModel;
-        $arrData = $model->query("SELECT idautor as id, aut_nombre as nombre FROM bib_autores WHERE aut_estado = 1 ORDER BY idautor ASC")->get();
-        return $this->respondWithJson($response, ["status" => true, "data" => $arrData]);
-    }
-
-    public function editoriales($request, $response)
-    {
-        $model = new TableModel;
-        $arrData = $model->query("SELECT ideditorial as id, edi_nombre as nombre FROM bib_editoriales WHERE edi_estado = 1 ORDER BY ideditorial ASC")->get();
-        return $this->respondWithJson($response, ["status" => true, "data" => $arrData]);
-    }
-
-    public function articulos($request, $response)
-    {
-        $model = new TableModel;
-        $arrData = $model->query("SELECT idarticulo as id, art_nombre as nombre FROM bib_articulos WHERE art_estado = 1 AND idtipo=4 ORDER BY idarticulo ASC")->get();
+        $arrData = $model->query("SELECT idlibro as id, lib_titulo as nombre FROM bib_libros ORDER BY idlibro ASC")->get();
         return $this->respondWithJson($response, ["status" => true, "data" => $arrData]);
     }
 }

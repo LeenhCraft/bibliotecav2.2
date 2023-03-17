@@ -4,6 +4,7 @@
 
 use App\Controllers\Admin\ArticulosController;
 use App\Controllers\Admin\AutoresController;
+use App\Controllers\Admin\CopiasController;
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\EditorialesController;
 use App\Controllers\Admin\LibrosController;
@@ -146,6 +147,28 @@ $app->group('/admin', function (RouteCollectorProxy $group) {
         $group->post("/autores", LibrosController::class . ":autores");
         $group->post("/editoriales", LibrosController::class . ":editoriales");
         $group->post("/articulos", LibrosController::class . ":articulos");
+    })->add(PermissionMiddleware::class);
+
+    $group->group("/copias", function (RouteCollectorProxy $group) {
+        $group->get("", CopiasController::class . ":index");
+
+        $group->post("", CopiasController::class . ":list");
+        $group->post("/save", CopiasController::class . ":store");
+        $group->post("/search", CopiasController::class . ":search");
+        $group->post("/update", CopiasController::class . ":update");
+        $group->post("/delete", CopiasController::class . ":delete");
+        $group->post("/libros", CopiasController::class . ":libros");
+    })->add(PermissionMiddleware::class);
+
+    $group->group("/reservas", function (RouteCollectorProxy $group) {
+        $group->get("", CopiasController::class . ":index");
+
+        $group->post("", CopiasController::class . ":list");
+        $group->post("/save", CopiasController::class . ":store");
+        $group->post("/search", CopiasController::class . ":search");
+        $group->post("/update", CopiasController::class . ":update");
+        $group->post("/delete", CopiasController::class . ":delete");
+        $group->post("/libros", CopiasController::class . ":libros");
     })->add(PermissionMiddleware::class);
     
 })->add(new LoginAdminMiddleware());

@@ -1,14 +1,7 @@
 let tb;
 $(document).ready(function () {
-  $.fn.modal.Constructor.prototype._initializeFocusTrap = function () {
-    return {
-      activate: function () {},
-      deactivate: function () {},
-    };
-  };
-  initSample();
   lstAutores();
-  $("#idautor,#ideditorial,#idarticulo").select2({
+  $("#idlibro").select2({
     dropdownParent: $("#modal"),
   });
   tb = $("#tb").dataTable({
@@ -18,14 +11,14 @@ $(document).ready(function () {
       url: base_url + "js/app/plugins/dataTable.Spanish.json",
     },
     ajax: {
-      url: base_url + "admin/libros",
+      url: base_url + "admin/copias",
       method: "POST",
       dataSrc: "",
     },
     columns: [
       { data: "num", class: "text-left" },
       { data: "name", class: "text-left" },
-      { data: "web", class: "text-end" },
+      { data: "cod", class: "text-left" },
       { data: "status", class: "text-center" },
       { data: "options", class: "text-end" },
     ],
@@ -43,27 +36,15 @@ function openModal() {
   $("#modal").modal("show");
 }
 
-function validarImg(ths, event) {
-  let view = $(".mostrarimagen");
-  let file = $(ths)[0].files[0];
-  var tmppath = URL.createObjectURL(event.target.files[0]);
-  view
-    .html('<img width="140px" src="' + tmppath + '" alt="" id="viewimg">')
-    .show("fast");
-}
-
 function save(ths, e) {
-  let sub_nombre = $("#name").val();
+  // let sub_nombre = $("#name").val();
   let dat = new FormData(ths);
-  let editor = CKEDITOR.instances.description.getData();
-  dat.append("description", editor);
-
-  if (sub_nombre == "") {
-    Swal.fire("Atención", "Es necesario un nombre para el submenu.", "warning");
-    return false;
-  }
+  // if (sub_nombre == "") {
+  //   Swal.fire("Atención", "Es necesario un nombre para el submenu.", "warning");
+  //   return false;
+  // }
   divLoading.css("display", "flex");
-  let ajaxUrl = base_url + "admin/libros/save";
+  let ajaxUrl = base_url + "admin/copias/save";
   $.ajax({
     type: "POST",
     url: ajaxUrl,
@@ -91,15 +72,14 @@ function save(ths, e) {
 }
 
 function update(ths, e) {
-  let sub_nombre = $("#name").val();
+  // let sub_nombre = $("#name").val();
   let form = new FormData(ths);
-  form.append("description", CKEDITOR.instances.description.getData());
-  if (sub_nombre == "") {
-    Swal.fire("Atención", "Es necesario un nombre para continuar", "warning");
-    return false;
-  }
+  // if (sub_nombre == "") {
+  //   Swal.fire("Atención", "Es necesario un nombre para continuar", "warning");
+  //   return false;
+  // }
   divLoading.css("display", "flex");
-  let ajaxUrl = base_url + "admin/libros/update";
+  let ajaxUrl = base_url + "admin/copias/update";
   $.ajax({
     type: "POST",
     url: ajaxUrl,
@@ -126,9 +106,9 @@ function update(ths, e) {
 function fntEdit(id) {
   lstAutores();
   resetForm();
-  let ajaxUrl = base_url + "admin/libros/search";
+  let ajaxUrl = base_url + "admin/copias/search";
   $(".modal-title").html("Actualizar articulo");
-  $("#btnActionForm").removeClass("btn-primary");
+  $("#btnActionForm").removeClass("btn-outline-primary");
   $("#btnActionForm").addClass("btn-info");
   $("#btnText").html("Actualizar");
   $("#form").attr("onsubmit", "return update(this,event)");
@@ -137,20 +117,10 @@ function fntEdit(id) {
   //
   $.post(ajaxUrl, { id: id }, function (data) {
     if (data.status) {
-      $("#id").val(data.data.idlibro);
-      $("#status")
-        .prop("checked", data.data.lib_estado == 1)
-        .trigger("change");
-      $("#idarticulo").val(data.data.idarticulo).trigger("change");
-      $("#ideditorial").val(data.data.ideditorial).trigger("change");
-      $("#name").val(data.data.lib_titulo);
-      $("#date_publish").val(data.data.lib_fecha_publi);
-      $("#pages").val(data.data.lib_num_paginas);
-      $("#publish")
-        .prop("checked", data.data.lib_publicar == 1)
-        .trigger("change");
-      $("#slug").val(data.data.lib_slug);
-      CKEDITOR.instances.description.setData(data.data.lib_descripcion);
+      $("#id").val(data.data.idcopias);
+      $("#idlibro").val(data.data.idlibro).trigger("change");
+      $("#name").val(data.data.cop_codinventario);
+      $("#ubicacion").val(data.data.cop_ubicacion);
     } else {
       Swal.fire({
         title: "Error",
@@ -174,7 +144,7 @@ function fntDel(idp) {
     cancelButtonText: "No, cancelar!",
   }).then((result) => {
     if (result.isConfirmed) {
-      let ajaxUrl = base_url + "admin/libros/delete";
+      let ajaxUrl = base_url + "admin/copias/delete";
       $.post(ajaxUrl, { id: idp }, function (data) {
         if (data.status) {
           Swal.fire({
@@ -199,35 +169,12 @@ function fntDel(idp) {
 }
 
 function lstAutores() {
-  let ajaxUrl = base_url + "admin/libros/autores";
+  let ajaxUrl = base_url + "admin/copias/libros";
   $.post(ajaxUrl, function (data) {
     if (data.status) {
-      $("#idautor").empty();
+      $("#idlibro").empty();
       $.each(data.data, function (index, value) {
-        $("#idautor").append(
-          "<option value=" + value.id + ">" + value.nombre + "</option>"
-        );
-      });
-    }
-  });
-  ajaxUrl = base_url + "admin/libros/editoriales";
-  $.post(ajaxUrl, function (data) {
-    if (data.status) {
-      $("#ideditorial").empty();
-      $.each(data.data, function (index, value) {
-        $("#ideditorial").append(
-          "<option value=" + value.id + ">" + value.nombre + "</option>"
-        );
-      });
-    }
-  });
-
-  ajaxUrl = base_url + "admin/libros/articulos";
-  $.post(ajaxUrl, function (data) {
-    if (data.status) {
-      $("#idarticulo").empty();
-      $.each(data.data, function (index, value) {
-        $("#idarticulo").append(
+        $("#idlibro").append(
           "<option value=" + value.id + ">" + value.nombre + "</option>"
         );
       });
@@ -237,36 +184,10 @@ function lstAutores() {
 
 function resetForm(ths) {
   $("#form").trigger("reset");
+  $("#idlibro").trigger("change");
   $("#id").val("");
-  $("#idarticulo").trigger("change");
-  $("#ideditorial").trigger("change");
-  $("#idautor").trigger("change");
-  // window.editor.setData("");
-  CKEDITOR.instances.description.setData("");
-  $(".mostrarimagen").html("").hide("fast");
   $(ths).attr("onsubmit", "return save(this,event)");
   $("#btnText").html("Guardar");
-  $("#btnActionForm").removeClass("btn-info").addClass("btn-primary");
-  $(".modal-title").html("Agregar articulo");
-}
-
-function editSlug(e) {
-  if ($(".i_var").hasClass("bxs-pencil")) {
-    $("#slug").attr("readonly", false);
-    //attr("disabled", false);
-    $(".i_var").removeClass("bxs-pencil").addClass("bxs-lock-alt");
-  } else {
-    $("#slug").attr("readonly", true); //.attr("disabled", true);
-    $(".i_var").removeClass("bxs-lock-alt").addClass("bxs-pencil");
-  }
-}
-
-function crearSlug(slug) {
-  slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  slug = slug
-    .replace(/[`~!@#$%^&*()_\-+=\[\]{};:'"\\|\/,.<>?\s]/g, " ")
-    .toLowerCase();
-  slug = slug.replace(/^\s+|\s+$/gm, "");
-  slug = slug.replace(/\s+/g, "-");
-  $("#slug").val(slug);
+  $("#btnActionForm").removeClass("btn-info").addClass("btn-outline-primary");
+  $(".modal-title").html("Agregar copia");
 }

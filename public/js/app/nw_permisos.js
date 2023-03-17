@@ -1,5 +1,8 @@
 let tb;
 $(document).ready(function () {
+  $("#idsubmenu").select2({
+    dropdownParent: $("#modalpermisos"),
+  });
   tb = $("#sis_permisos").dataTable({
     aProcessing: true,
     aServerSide: true,
