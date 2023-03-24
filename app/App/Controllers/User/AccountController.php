@@ -16,7 +16,7 @@ class AccountController extends Controller
 
     public function __construct()
     {
-        session_start();
+        // session_start();
         $this->responseFactory = new ResponseFactory();
         $this->guard = new Guard($this->responseFactory);
         $this->guard->setStorageLimit(1);

@@ -20,12 +20,21 @@ $(document).ready(function () {
       $.post(ajaxUrl, data, function (data) {
         console.log(data);
         divLoading.css("display", "none");
-        Swal.fire({
-          title: "success",
-          text: data.message,
-          icon: "success",
-          confirmButtonText: "ok",
-        });
+        if (data.status) {
+          Swal.fire({
+            title: "success",
+            text: data.message,
+            icon: "success",
+            confirmButtonText: "ok",
+          });
+        } else {
+          Swal.fire({
+            title: "error",
+            text: data.message,
+            icon: "error",
+            confirmButtonText: "ok",
+          });
+        }
       });
     },
   });

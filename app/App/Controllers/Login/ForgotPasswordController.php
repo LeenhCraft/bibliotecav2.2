@@ -78,11 +78,13 @@ class ForgotPasswordController extends Controller
                 "token" => $usuario['usu_token'],
                 "expires" => $usuario['usu_expire'],
             ]);
+            $msg = "Se ha enviado un correo a su cuenta de correo electrónico.";
+            return $this->respondWithSuccess($response, $msg);
         }
         $this->guard->removeAllTokenFromStorage();
         // responder
-        $msg = "Se ha enviado un correo a su cuenta de correo electrónico";
-        return $this->respondWithSuccess($response, $msg);
+        $msg = "El email ingresado no es válido";
+        return $this->respondWithError($response, $msg);
     }
 
     public function reset($request, $response, $args)

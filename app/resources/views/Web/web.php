@@ -30,6 +30,6 @@
     </div>
 </section>
 <?php
-dep($_SESSION);
+dep($data);
 ?>
 <?php footerWeb('Web.Template.footer_web', $data); ?>

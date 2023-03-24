@@ -16,7 +16,7 @@ class LoginAdminController extends Controller
 
     public function __construct()
     {
-        session_start();
+        parent::__construct();
         $this->responseFactory = new ResponseFactory();
         $this->guard = new Guard($this->responseFactory);
     }
@@ -71,7 +71,7 @@ class LoginAdminController extends Controller
             $_SESSION['app_id'] = $userData['idusuario'];
             $_SESSION['app_r'] = $userData['idrol'];
             $_SESSION['app_session'] = true;
-            $msg = "Bienvenido! " . $userData["per_nombre"];
+            $msg = "Bienvenido!\n" . $userData["per_nombre"];
             $this->guard->removeAllTokenFromStorage();
             return $this->respondWithSuccess($response, $msg);
         }

@@ -6,8 +6,7 @@ class LogoutController extends Controller
 {
     public function index($request, $response, $args)
     {
-        session_unset();
-        session_destroy();
+        $this->destroy();
         return $response
             ->withHeader('Location', base_url())
             ->withStatus(302);
@@ -15,10 +14,15 @@ class LogoutController extends Controller
 
     public function admin($request, $response, $args)
     {
-        session_unset();
-        session_destroy();
+        $this->destroy();
         return $response
             ->withHeader('Location', base_url() . 'admin/login')
             ->withStatus(302);
+    }
+
+    private function destroy()
+    {
+        session_unset();
+        session_destroy();
     }
 }

@@ -2,17 +2,23 @@
 
 namespace App\Controllers;
 
+use App\Models\TableModel;
 use App\Models\WebModel;
 
 class WebController extends Controller
 {
     public function index($request, $response, $args)
     {
+        $model = new TableModel;
+        $model->setTable("bib_libros");
+        $model->setId("idlibro");
+
         return $this->render($response, "Web.web", [
             "data" => [
                 "cant" => 10,
                 "title" => "Web",
-            ]
+            ],
+            "banner" => $model->orderBy("idlibro", "desc")->limit(4)->get(),
         ]);
     }
 

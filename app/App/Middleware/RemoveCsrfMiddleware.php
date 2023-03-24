@@ -4,6 +4,8 @@ namespace App\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Csrf\Guard;
+use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Response;
 
 class RemoveCsrfMiddleware
@@ -21,14 +23,13 @@ class RemoveCsrfMiddleware
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        if (!isset($_SESSION['lnh'])) {
-            $response = new Response();
-            return $response
-                ->withHeader('Location', base_url() . 'login')
-                ->withStatus(302);
-        } else {
-            $response = $handler->handle($request);
-            return $response;
+        if (isset($_SESSION['app_session'])) {
+            $responseFactory = new ResponseFactory();
+            $guard = new Guard($responseFactory);
+            $guard->removeAllTokenFromStorage();
         }
+        $response = $handler->handle($request);
+        // $response->getBody()->write('AFTER');
+        return $response;
     }
 }
