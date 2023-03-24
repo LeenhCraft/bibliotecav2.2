@@ -89,8 +89,8 @@ class LibrosController extends Controller
     {
         $data = $this->sanitize($request->getParsedBody());
         // $image = new ImageClass;
-        // $image->cargarImagen($_FILES['photo'], "libro", false);
-        // return $this->respondWithJson($response, $_FILES);
+        // $respuesta = $image->cargarImagen($_FILES['photo']);
+        // return $this->respondWithJson($response, $respuesta);
 
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
         if (!$validate) {
@@ -118,7 +118,7 @@ class LibrosController extends Controller
         $rq = $model->create([
             "idarticulo" => $data['idarticulo'] ?? 0,
             "ideditorial" => $data['ideditorial'] ?? 0,
-            "lib_titulo" => ucfirst($data['name']) ?? "UNDEFINED",
+            "lib_titulo" => ucwords($data['name']) ?? "UNDEFINED",
             "lib_slug" => strtolower($data['slug']),
             "lib_descripcion" => $data['description'],
             "lib_fecha_publi" => $data['date_publish'],
@@ -127,9 +127,19 @@ class LibrosController extends Controller
             "lib_publicar" => isset($data['publish']) && $data['publish'] == "on" ? '1' : "0",
         ]);
         if (!empty($rq)) {
-            // $image = new ImageClass;
-            // $image->cargarImagen($_FILES);
-            $msg = "Datos guardados correctamente";
+            $model->setTable("bib_lib_aut");
+            $model->setId("idlibroautor");
+            $model->create([
+                "idlibro" => $rq['idlibro'] ?? 0,
+                "idautor" => $data['idautor'] ?? 0,
+                "lxa_tipo" => ucfirst("Autor"),
+            ]);
+            $image = new ImageClass;
+            $img = $image->cargarImagen($_FILES['photo'], $rq);
+            $msg = "Datos guardados correctamente" . $img['text'];
+            if (isset($data['img_externa']) && $data['img_externa'] == "on") {
+                $img = $image->imagenExterna($data['photo_url'], $rq);
+            }
             return $this->respondWithSuccess($response, $msg);
         }
         $msg = "Error al guardar los datos";
@@ -169,7 +179,16 @@ class LibrosController extends Controller
         $model->setId("idlibro");
 
         $rq = $model->find($data['id']);
+
+        //id del autor
+        $model->setTable("bib_lib_aut");
+        $dataAutor['idautor'] = $model->find($data['id'])['idautor'] ?? '0';
+
+        $rq = array_merge($rq, $dataAutor);
+
         if (!empty($rq)) {
+            $imgClass = new ImageClass;
+            $rq['photo'] = $imgClass->getImage($rq['idlibro']);
             return $this->respondWithJson($response, ["status" => true, "data" => $rq]);
         }
         $msg = "No se encontraron datos";
@@ -224,7 +243,23 @@ class LibrosController extends Controller
             "lib_publicar" => isset($data['publish']) && $data['publish'] == "on" ? '1' : "0",
         ]);
         if (!empty($rq)) {
-            $msg = "Datos actualizados";
+            $model->setTable("bib_lib_aut");
+            $model->setId("idlibro");
+            $model->update($data['id'], [
+                "idautor" => $data['idautor'] ?? 0,
+                "lxa_tipo" => ucfirst("Autor"),
+            ]);
+
+            $image = new ImageClass;
+            $img = ['text' => ''];
+            if ($image->verificar($_FILES['photo'])) {
+                $img = $image->cargarImagen($_FILES['photo'], $rq);
+            }
+            if (isset($data['img_externa']) && $data['img_externa'] == "on") {
+                $img = $image->imagenExterna($data['photo_url'], $rq);
+            }
+
+            $msg = "Datos guardados correctamente" . $img['text'];
             return $this->respondWithSuccess($response, $msg);
         }
         $msg = "Error al guardar los datos";
@@ -274,6 +309,19 @@ class LibrosController extends Controller
 
             $rq = $model->delete($data["id"]);
             if (!empty($rq)) {
+
+                $model->setTable("bib_imagenes");
+                $model->setId("img_propietario");
+
+                $imgData = $model->where("img_propietario", $data["id"])->where("img_type", "LIB::MIN")->first();
+
+                if (!empty($imgData)) {
+                    $imgClass = new ImageClass;
+                    $imgClass->eliminarFile($imgData['img_url']);
+
+                    $model->query("DELETE FROM bib_imagenes WHERE img_propietario = ? AND img_type = ?", [$data["id"], "LIB::MIN"])->first();
+                }
+
                 $msg = "Datos eliminados correctamente";
                 return $this->respondWithSuccess($response, $msg);
             }
@@ -301,7 +349,7 @@ class LibrosController extends Controller
     public function articulos($request, $response)
     {
         $model = new TableModel;
-        $arrData = $model->query("SELECT idarticulo as id, art_nombre as nombre FROM bib_articulos WHERE art_estado = 1 AND idtipo=4 ORDER BY idarticulo ASC")->get();
+        $arrData = $model->query("SELECT idarticulo as id, art_nombre as nombre FROM bib_articulos WHERE art_estado = 1 AND idtipo = 1 ORDER BY idarticulo ASC")->get();
         return $this->respondWithJson($response, ["status" => true, "data" => $arrData]);
     }
 }

@@ -124,9 +124,23 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-12">
+                                        <div class="form-group mb-3">
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input" type="checkbox" id="img_externa" name="img_externa" onchange="imgExterna(this,event)">
+                                                <label class="form-check-label" for="img_externa">Imagen Externa</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 imgLocal">
+                                        <label for="photo" class="form-label">Imagen del Libro (5MB)</label>
+                                        <input type="file" class="form-control" name="photo" id="photo" onchange="viewImg(this,event)" accept="image/*">
+                                    </div>
+                                    <div class="mb-3 imgExterna" style="display: none;">
+                                        <label for="photo_url" class="form-label">Imagen del libro [URL]</label>
+                                        <input type="url" class="form-control" name="photo_url" id="photo_url" onblur="viewImgUrl(this,event)">
+                                    </div>
                                     <div class="mb-3">
-                                        <label for="photo" class="form-label">Imagen del articulo</label>
-                                        <input type="file" class="form-control" name="photo" id="photo" onchange="validarImg(this,event)">
                                         <div class="mt-3 mostrarimagen" style="display: none;"></div>
                                     </div>
                                 </div>

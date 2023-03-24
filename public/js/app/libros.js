@@ -43,13 +43,32 @@ function openModal() {
   $("#modal").modal("show");
 }
 
-function validarImg(ths, event) {
+function viewImg(ths, event) {
+  let fileSize = $(ths)[0].files[0].size / 1024 / 1024; // Tamaño del archivo en MB
+  if (fileSize > 5) {
+    Toast.fire({
+      icon: "error",
+      title: "El tamaño del archivo no debe superar los 5MB",
+    });
+    $("#photo").val("");
+  } else {
+    let view = $(".mostrarimagen");
+    let file = $(ths)[0].files[0];
+    var tmppath = URL.createObjectURL(event.target.files[0]);
+    view
+      .html('<img width="140px" src="' + tmppath + '" alt="" id="viewimg">')
+      .show("fast");
+    $("#photo_url").val("");
+  }
+}
+
+function viewImgUrl(ths, event) {
   let view = $(".mostrarimagen");
-  let file = $(ths)[0].files[0];
-  var tmppath = URL.createObjectURL(event.target.files[0]);
+  let file = $(ths).val();
   view
-    .html('<img width="140px" src="' + tmppath + '" alt="" id="viewimg">')
+    .html('<img width="140px" src="' + file + '" alt="" id="viewimg">')
     .show("fast");
+  $("#photo").val("");
 }
 
 function save(ths, e) {
@@ -59,7 +78,7 @@ function save(ths, e) {
   dat.append("description", editor);
 
   if (sub_nombre == "") {
-    Swal.fire("Atención", "Es necesario un nombre para el submenu.", "warning");
+    Swal.fire("Atención", "Es necesario un nombre para continuar.", "warning");
     return false;
   }
   divLoading.css("display", "flex");
@@ -143,6 +162,7 @@ function fntEdit(id) {
         .trigger("change");
       $("#idarticulo").val(data.data.idarticulo).trigger("change");
       $("#ideditorial").val(data.data.ideditorial).trigger("change");
+      $("#idautor").val(data.data.idautor).trigger("change");
       $("#name").val(data.data.lib_titulo);
       $("#date_publish").val(data.data.lib_fecha_publi);
       $("#pages").val(data.data.lib_num_paginas);
@@ -150,6 +170,10 @@ function fntEdit(id) {
         .prop("checked", data.data.lib_publicar == 1)
         .trigger("change");
       $("#slug").val(data.data.lib_slug);
+      $(".mostrarimagen")
+        .html('<img width="140px" src="' + data.data.photo + '" alt="" id="viewimg">')
+        .show("fast");
+      $("#photo_url").val("");
       CKEDITOR.instances.description.setData(data.data.lib_descripcion);
     } else {
       Swal.fire({
@@ -244,6 +268,8 @@ function resetForm(ths) {
   // window.editor.setData("");
   CKEDITOR.instances.description.setData("");
   $(".mostrarimagen").html("").hide("fast");
+  $("#img_externa").prop("checked", false).trigger("change");
+
   $(ths).attr("onsubmit", "return save(this,event)");
   $("#btnText").html("Guardar");
   $("#btnActionForm").removeClass("btn-info").addClass("btn-primary");
@@ -269,4 +295,15 @@ function crearSlug(slug) {
   slug = slug.replace(/^\s+|\s+$/gm, "");
   slug = slug.replace(/\s+/g, "-");
   $("#slug").val(slug);
+}
+
+function imgExterna(ths, e) {
+  if ($(ths).prop("checked")) {
+    $(".imgExterna").show("fast");
+    $(".imgLocal").hide("fast");
+  } else {
+    $(".imgExterna").hide("fast");
+    $(".imgLocal").show("fast");
+  }
+  $(".mostrarimagen").html("").hide("fast");
 }

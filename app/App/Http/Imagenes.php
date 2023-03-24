@@ -119,4 +119,33 @@ class Imagenes
         imagecopyresampled($nuevaImg, $img, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $width, $height);
         return imagejpeg($nuevaImg, $image12);
     }
+
+    // funcion para verificar el peso de la imagen
+    function peso($archivo, $unidad = 'KB')
+    {
+        $tamaño = $archivo['size'];
+        $tamaño_kb = $tamaño / 1024;
+        $tamaño_mb = $tamaño_kb / 1024;
+
+        switch ($unidad) {
+            case 'KB':
+                return number_format($tamaño_kb, 2) . ' KB';
+                break;
+            case 'MB':
+                return number_format($tamaño_mb, 2) . ' MB';
+                break;
+            default:
+                return $tamaño;
+                break;
+        }
+    }
+
+    public function moverImg($ruta, $destination)
+    {
+        if (move_uploaded_file($ruta, $destination)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
