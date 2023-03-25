@@ -52,7 +52,7 @@ $(document).ready(function () {
         let ajaxUrl = base_url + "register";
         divLoading.css("display", "flex");
         $.post(ajaxUrl, data, function (data) {
-          console.log(data);
+          // console.log(data);
           divLoading.css("display", "none");
           if (data.status) {
             let tk = data.data.token ?? "#";

@@ -124,7 +124,7 @@ function update(ths, e) {
   let sub_nombre = $("#name").val();
 
   let form = $(ths).serialize();
-  console.log(form);
+  // console.log(form);
   if (sub_nombre == "") {
     Swal.fire("Atención", "Es necesario un nombre para continuar.", "warning");
     return false;

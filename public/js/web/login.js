@@ -23,7 +23,7 @@ $(document).ready(function () {
       let ajaxUrl = base_url + "login";
       $.post(ajaxUrl, data, function (data) {
         divLoading.css("display", "none");
-        console.log(data);
+        // console.log(data);
         if (data.status) {
           Toast.fire({
             icon: "success",

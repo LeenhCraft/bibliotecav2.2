@@ -28,7 +28,7 @@ $(document).ready(function () {
       let ajaxUrl = base_url + "reset-password";
       divLoading.css("display", "flex");
       $.post(ajaxUrl, data, function (data) {
-        console.log(data);
+        // console.log(data);
         divLoading.css("display", "none");
         Swal.fire({
           title: "¡Éxito!",

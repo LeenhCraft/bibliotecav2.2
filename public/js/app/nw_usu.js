@@ -55,7 +55,7 @@ function fntEdit(idp) {
   $("#modalFormUsuario").modal("show");
   //
   $.post(ajaxUrl, { id: idp }, function (data) {
-    console.log(data);
+    // console.log(data);
     if (data.status) {
       $("#id").val(data.data.idusuario);
       $("#user").val(data.data.usu_usuario);

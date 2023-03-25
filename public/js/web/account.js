@@ -38,7 +38,7 @@ $(document).ready(function () {
       divLoading.css("display", "flex");
 
       $.post(ajaxUrl, dat, function (data) {
-        console.log(data);
+        // console.log(data);
         divLoading.css("display", "none");
         Swal.fire({
           // title: data.title,

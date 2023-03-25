@@ -105,7 +105,7 @@ function update(ths, e) {
   let sub_nombre = $("#name").val();
   let form = new FormData(ths);
   form.append("description", CKEDITOR.instances.description.getData());
-  console.log(form);
+  // console.log(form);
   if (sub_nombre == "") {
     Swal.fire("Atención", "Es necesario un nombre para el submenu.", "warning");
     return false;
@@ -149,7 +149,7 @@ function fntEdit(id) {
   //
   $.post(ajaxUrl, { id: id }, function (data) {
     if (data.status) {
-      console.log(data);
+      // console.log(data);
       $("#id").val(data.data.idarticulo);
       $("#type_article").val(data.data.idtipo);
       $("#name").val(data.data.art_nombre);

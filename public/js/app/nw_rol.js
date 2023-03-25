@@ -47,7 +47,7 @@ function fntEdit(idp) {
   $("#addModal").modal("show");
   //
   $.post(ajaxUrl, { id: idp }, function (data) {
-    console.log(data);
+    // console.log(data);
     if (data.status) {
       $("#id").val(data.data.idrol);
       $("#code").val(data.data.rol_cod);

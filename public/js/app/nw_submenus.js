@@ -154,7 +154,7 @@ function update(ths, e) {
   let sub_controlador = $("#controller").val();
   let sub_method = $("#method").val();
   let form = $(ths).serialize();
-  console.log(form);
+  // console.log(form);
   if (sub_nombre == "") {
     Swal.fire("Atención", "Es necesario un nombre para el submenu.", "warning");
     return false;
