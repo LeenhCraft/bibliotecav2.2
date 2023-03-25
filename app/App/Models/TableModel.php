@@ -10,6 +10,8 @@ class TableModel extends Model
 
     protected $id;
 
+    protected $query;
+
     public function getTable()
     {
         return $this->table;
@@ -28,5 +30,10 @@ class TableModel extends Model
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function getQuery()
+    {
+        return $this->query;
     }
 }

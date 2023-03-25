@@ -40,9 +40,9 @@
                                             <label class="form-check-label" for="status">Activar/Desactivar</label>
                                         </div>
                                     </div>
-                                    <div class="col-auto d-none">
+                                    <div class="col-auto">
                                         <div class="form-check form-switch mb-2">
-                                            <input class="form-check-input" type="checkbox" id="unique" name="unique" onchange="alert()" checked>
+                                            <input class="form-check-input" type="checkbox" id="unique" name="unique" checked>
                                             <label class="form-check-label" for="unique">Copia única</label>
                                         </div>
                                     </div>
@@ -105,7 +105,7 @@
                                     <div class="col-12">
                                         <div class="form-group mb-3">
                                             <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input" type="checkbox" id="publish" name="publish">
+                                                <input class="form-check-input" type="checkbox" id="publish" name="publish" checked>
                                                 <label class="form-check-label" for="publish">Publicar en la web</label>
                                             </div>
                                         </div>

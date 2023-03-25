@@ -3,15 +3,11 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\Controller;
-use App\Models\MenuModel;
 use App\Models\TableModel;
-
 use Slim\Csrf\Guard;
 use Slim\Psr7\Factory\ResponseFactory;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 
-class ArticulosController extends Controller
+class DataBaseController extends Controller
 {
 
     protected $permisos = [];
@@ -30,14 +26,12 @@ class ArticulosController extends Controller
     {
         // return $response;
         // $this->guard->removeAllTokenFromStorage();
-        return $this->render($response, 'App.Articulos.articulos', [
-            'titulo_web' => 'Articulos',
+        return $this->render($response, 'App.Maestras.database', [
+            'titulo_web' => 'Tipos',
             "url" => $request->getUri()->getPath(),
             "permisos" => $this->permisos,
             'js' => [
-                'js/app/plugins/ckeditor/ckeditor.js',
-                'js/app/sample.js',
-                'js/app/articulos.js',
+                'js/app/database.js',
             ],
             "tk" => [
                 "name" => $this->guard->getTokenNameKey(),
@@ -50,40 +44,38 @@ class ArticulosController extends Controller
     public function list($request, $response)
     {
         $model = new TableModel;
-        $model->setTable('bib_articulos');
-        $model->setId("idarticulo");
+        $model->setTable('sis_tareas_ejecutables');
+        $model->setId("idtarea");
 
-        $arrData = $model->orderBy("idarticulo", "DESC")->get();
+        $arrData = $model->orderBy("idtarea", "DESC")->get();
         $data = [];
 
         $nmr = 0;
         for ($i = 0; $i < count($arrData); $i++) {
-            $btnEdit = "";
             $btnDelete = "";
+            $btnEdit = "";
             $nmr++;
-            if ($arrData[$i]['art_estado'] == 1) {
-                $data[$i]['status'] = "<i class='bx-1 bx bx-check text-success'></i>";
-            } else {
-                $data[$i]['status'] = "<i class='bx-1 bx bx-x text-danger'></i>";
+
+            if ($this->permisos['perm_d'] == 1) {
+                $btnDelete = '<a class="dropdown-item" href="javascript:fntDel(' . $arrData[$i]['idtarea'] . ');"><i class="bx bx-trash me-1"></i> Delete</a>';
             }
             if ($this->permisos['perm_u'] == 1) {
-                $btnEdit = '<button class="btn btn-success btn-sm" onClick="fntEdit(' . $arrData[$i]['idarticulo'] . ')" title="Editar Menus"><i class="bx bxs-edit-alt"></i></button>';
+                $btnEdit = '<a class="dropdown-item" href="javascript:fntEdit(' . $arrData[$i]['idtarea'] . ');"><i class="bx bx-edit-alt me-1"></i> Edit</a>';
             }
-            if ($this->permisos['perm_d'] == 1) {
-                $btnDelete = '<button class="btn btn-danger btn-sm" onClick="fntDel(' . $arrData[$i]['idarticulo'] . ')" title="Eliminar Menus"><i class="bx bxs-trash-alt" ></i></button>';
-            }
-            $data[$i]['type'] = $model->query("SELECT tip_nombre FROM bib_tipo_articulo WHERE idtipo = " . $arrData[$i]['idtipo'] . " AND tip_estado = 1")->first()['tip_nombre'];
+            $btnTodo = '<button class="btn btn-outline-success btn-sm" onClick="todo(' . $arrData[$i]['idtarea'] . ')" title="Ejecutar"><i class="bx bx-code-alt" ></i></button>';
 
-            $data[$i]['options'] = '<div class="btn-group" role="group" aria-label="Basic example">' . $btnEdit . ' ' . $btnDelete . '</div>';
-            $data[$i]['num'] = $nmr;
-            $data[$i]['name'] = $arrData[$i]['art_nombre'];
+            $data[$i]['options'] = '<div class="d-flex flex-row">' . $btnTodo . '<div class="ms-3 dropdown"><button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i></button><div class="dropdown-menu">' . $btnEdit . $btnDelete . '</div></div></div>';
+            $data[$i]['name'] = $arrData[$i]['ta_name'];
+            $data[$i]['des'] = $arrData[$i]['ta_description'];
         }
         return $this->respondWithJson($response, $data);
     }
 
-    public function store(Request $request, Response $response)
+    public function store($request, $response, $args)
     {
-        $data = $this->sanitize($request->getParsedBody());
+        // $data = $this->sanitize($request->getParsedBody());
+        $data = $request->getParsedBody();
+        // return $this->respondWithJson($response, $data);
 
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
         if (!$validate) {
@@ -98,21 +90,19 @@ class ArticulosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_articulos");
-        $model->setId("idarticulo");
+        $model->setTable('sis_tareas_ejecutables');
+        $model->setId("idtarea");
 
-        $existe = $model->where("art_nombre", $data['name'])->where("art_estado", '1')->first();
+        $existe = $model->where("ta_name", $data['name'])->first();
         if (!empty($existe)) {
-            $msg = "Ya existe un articulo con el mismo nombre";
+            $msg = "Ya existe un registro con el mismo nombre";
             return $this->respondWithError($response, $msg);
         }
 
         $rq = $model->create([
-            "idtipo" => $data['type_article'] ?? 0,
-            "art_nombre" => ucwords($data['name']) ?? "UNDEFINED",
-            "art_num_inventario" => $data['stock_number'] ?? 0,
-            "art_descripcion" => $data['description'] ?? null,
-            "art_estado" => isset($data['status']) && $data['status'] == "on" ? '1' : "0",
+            "ta_name" => ucwords($data['name']) ?? "UNDEFINED",
+            "ta_description" => ucfirst($data['description']) ?? "UNDEFINED",
+            "ta_execute" => $data['execute'] ?? "-",
         ]);
         if (!empty($rq)) {
             $msg = "Datos guardados correctamente";
@@ -122,13 +112,9 @@ class ArticulosController extends Controller
         return $this->respondWithJson($response, $existe);
     }
 
-    public function validar($data)
+    private function validar($data)
     {
-
-        if (empty("type_article")) {
-            return false;
-        }
-        if (empty("name")) {
+        if (empty($data["name"])) {
             return false;
         }
         return true;
@@ -145,8 +131,8 @@ class ArticulosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_articulos");
-        $model->setId("idarticulo");
+        $model->setTable('sis_tareas_ejecutables');
+        $model->setId("idtarea");
 
         $rq = $model->find($data['id']);
         if (!empty($rq)) {
@@ -166,7 +152,8 @@ class ArticulosController extends Controller
 
     public function update($request, $response)
     {
-        $data = $this->sanitize($request->getParsedBody());
+        // $data = $this->sanitize($request->getParsedBody());
+        $data = $request->getParsedBody();
         // return $this->respondWithJson($response, $data);
 
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
@@ -182,21 +169,19 @@ class ArticulosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_articulos");
-        $model->setId("idarticulo");
+        $model->setTable('sis_tareas_ejecutables');
+        $model->setId("idtarea");
 
-        $existe = $model->where("art_nombre", $data['name'])->where("idarticulo", "!=", $data['id'])->first();
+        $existe = $model->where("ta_name", $data['name'])->where("idtarea", "!=", $data['id'])->first();
         if (!empty($existe)) {
-            $msg = "Ya tiene un articulo con el mismo nombre";
+            $msg = "Ya existe un registro con el mismo nombre";
             return $this->respondWithError($response, $msg);
         }
 
         $rq = $model->update($data['id'], [
-            "idtipo" => $data['type_article'] ?? 0,
-            "art_nombre" => ucwords($data['name']) ?? "UNDEFINED",
-            "art_num_inventario" => $data['stock_number'] ?? 0,
-            "art_descripcion" => $data['description'] ?? null,
-            "art_estado" => isset($data['status']) && $data['status'] == "on" ? '1' : "0",
+            "ta_name" => ucwords($data['name']) ?? "UNDEFINED",
+            "ta_description" => ucfirst($data['description']) ?? "UNDEFINED",
+            "ta_execute" => $data['execute'] ?? "-",
         ]);
         if (!empty($rq)) {
             $msg = "Datos actualizados";
@@ -209,9 +194,6 @@ class ArticulosController extends Controller
     private function validarUpdate($data)
     {
         if (empty($data["id"])) {
-            return false;
-        }
-        if (empty("type_article")) {
             return false;
         }
         if (empty($data["name"])) {
@@ -228,19 +210,11 @@ class ArticulosController extends Controller
         }
 
         $model = new TableModel;
-        $model->setTable("bib_articulos");
-        $model->setId("idarticulo");
+        $model->setTable('sis_tareas_ejecutables');
+        $model->setId("idtarea");
 
         $rq = $model->find($data["id"]);
         if (!empty($rq)) {
-
-            $libro = $model->query("SELECT * FROM `bib_libros` WHERE `idarticulo` = {$data["id"]}")->first();
-
-            if (!empty($libro)) {
-                $msg = "No se puede eliminar el registro, ya que tiene un libro asociado";
-                return $this->respondWithError($response, $msg);
-            }
-
             $rq = $model->delete($data["id"]);
             if (!empty($rq)) {
                 $msg = "Datos eliminados correctamente";
@@ -253,10 +227,28 @@ class ArticulosController extends Controller
         return $this->respondWithError($response, $msg);
     }
 
-    public function tipos($request, $response)
+    public function execute($request, $response)
     {
-        $menuModel = new MenuModel;
-        $arrData = $menuModel->query("SELECT idtipo as id, tip_nombre as nombre FROM bib_tipo_articulo WHERE tip_estado = 1 ORDER BY idtipo ASC")->get();
-        return $this->respondWithJson($response, ["status" => true, "data" => $arrData]);
+        $data = $this->sanitize($request->getParsedBody());
+        if (empty($data["id"])) {
+            return $this->respondWithError($response, "Error de validación, por favor recargue la página");
+        }
+
+        $model = new TableModel;
+        $model->setTable('sis_tareas_ejecutables');
+        $model->setId("idtarea");
+
+        $rq = $model->find($data["id"]);
+        if (!empty($rq)) {
+            $res = $model->multiQuery($rq["ta_execute"]);
+            if ($res) {
+                $msg = "Datos eliminados correctamente";
+                return $this->respondWithSuccess($response, $msg);
+            }
+            $msg = "Error al eliminar los datos";
+            return $this->respondWithError($response, $msg);
+        }
+        $msg = "No se encontraron datos para eliminar.";
+        return $this->respondWithError($response, $msg);
     }
 }

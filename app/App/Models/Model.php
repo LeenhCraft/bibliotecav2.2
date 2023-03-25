@@ -219,4 +219,11 @@ class Model
         $this->query($sql, [$id], 'i');
         return $this->connection->affected_rows;
     }
+
+    // funcion para ejecutar multiples consultas en una sola linea con mysqli_multi_query
+    public function multiQuery($sql)
+    {
+        $this->query = $this->connection->multi_query($sql);
+        return $this;
+    }
 }

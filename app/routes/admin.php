@@ -6,6 +6,7 @@ use App\Controllers\Admin\ArticulosController;
 use App\Controllers\Admin\AutoresController;
 use App\Controllers\Admin\CopiasController;
 use App\Controllers\Admin\DashboardController;
+use App\Controllers\Admin\DataBaseController;
 use App\Controllers\Admin\EditorialesController;
 use App\Controllers\Admin\LibrosController;
 use Slim\Routing\RouteCollectorProxy;
@@ -34,6 +35,16 @@ $app->post('/admin/login', LoginAdminController::class . ':sessionUser');
 $app->group('/admin', function (RouteCollectorProxy $group) {
     $group->get("", DashboardController::class . ':index')->add(new RemoveCsrfMiddleware());
     $group->get("/logout", LogoutController::class . ':admin')->add(new RemoveCsrfMiddleware());
+
+    $group->group('/database', function (RouteCollectorProxy $group) {
+        $group->get('', DataBaseController::class . ':index')->add(new RemoveCsrfMiddleware());
+        $group->post('', DataBaseController::class . ':list');
+        $group->post('/save', DataBaseController::class . ':store');
+        $group->post('/update', DataBaseController::class . ':update');
+        $group->post('/search', DataBaseController::class . ':search');
+        $group->post('/delete', DataBaseController::class . ':delete');
+        $group->post('/execute', DataBaseController::class . ':execute');
+    });
 
     $group->group('/menus', function (RouteCollectorProxy $group) {
         $group->get('', MenusController::class . ':index')->add(new RemoveCsrfMiddleware());

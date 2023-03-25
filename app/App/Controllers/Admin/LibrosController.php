@@ -88,9 +88,7 @@ class LibrosController extends Controller
     public function store(Request $request, Response $response)
     {
         $data = $this->sanitize($request->getParsedBody());
-        // $image = new ImageClass;
-        // $respuesta = $image->cargarImagen($_FILES['photo']);
-        // return $this->respondWithJson($response, $respuesta);
+        // return $this->respondWithJson($response, $data);
 
         $validate = $this->guard->validateToken($data['csrf_name'], $data['csrf_value']);
         if (!$validate) {
@@ -134,6 +132,19 @@ class LibrosController extends Controller
                 "idautor" => $data['idautor'] ?? 0,
                 "lxa_tipo" => ucfirst("Autor"),
             ]);
+
+            if (isset($data['unique']) && $data['unique'] == "on") {
+                $model->setTable("bib_copias");
+                $model->setId("idcopias");
+                $model->create([
+                    "idlibro" => $rq['idlibro'] ?? 0,
+                    "cop_codinventario" => $rq['idlibro'] ?? 0,
+                    "cop_ubicacion" => "Undefined",
+                    "cop_copias_disponibles" => '1',
+                    "cop_estado" => 1
+                ]);
+            }
+
             $image = new ImageClass;
             $img = $image->cargarImagen($_FILES['photo'], $rq);
             $msg = "Datos guardados correctamente" . $img['text'];
@@ -300,13 +311,19 @@ class LibrosController extends Controller
         $rq = $model->find($data["id"]);
         if (!empty($rq)) {
 
-            // $libro = $model->query("SELECT * FROM `bib_libros` WHERE `idarticulo` = {$data["id"]}")->first();
+            // copias del libro
+            $model->setTable("bib_copias");
+            $model->setId("idlibro");
 
-            // if (!empty($libro)) {
-            //     $msg = "No se puede eliminar el registro, ya que tiene un libro asociado";
-            //     return $this->respondWithError($response, $libro);
-            // }
+            $copias = $model->find($data["id"]);
 
+            if (!empty($copias)) {
+                // eliminar copias del libro
+                $model->delete($data["id"]);
+            }
+            
+            $model->setTable("bib_libros");
+            $model->setId("idlibro");
             $rq = $model->delete($data["id"]);
             if (!empty($rq)) {
 
