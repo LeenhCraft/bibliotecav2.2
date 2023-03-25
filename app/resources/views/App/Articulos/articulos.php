@@ -29,7 +29,6 @@
     </div>
 </div>
 <?php
-dep($_SESSION);
 if ($data['permisos']['perm_w'] == 1 || $data['permisos']['perm_u'] == 1) {
     getModal('mdlArticulos', $data);
 }
